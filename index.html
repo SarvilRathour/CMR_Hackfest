@@ -11,8 +11,9 @@
             --border-color: #f3f4f6;
             --text-main: #111827;
             --text-muted: #6b7280;
-            --accent-blue: #2563eb;
-            --nav-height: 70px;
+            --accent-blue: #2563eb; 
+            --accent-hover: #1d4ed8;
+            --nav-height: 80px;
         }
 
         body {
@@ -20,7 +21,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding-top: var(--nav-height); /* Prevent content from hiding under sticky nav */
+            padding-top: var(--nav-height);
         }
 
         /* --- Header Section --- */
@@ -41,7 +42,7 @@
 
         .logo {
             font-weight: 800;
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             color: var(--text-main);
             text-decoration: none;
             letter-spacing: -0.5px;
@@ -50,53 +51,55 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .nav-link {
+        .data-link {
             text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 500;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
             transition: color 0.2s;
         }
 
-        .nav-link:hover {
+        .data-link:hover {
             color: var(--accent-blue);
         }
 
-        /* Distinctive Login Buttons in Header */
         .login-group {
             display: flex;
             gap: 0.75rem;
-            border-left: 1px solid var(--border-color);
-            padding-left: 1.5rem;
-            margin-left: 0.5rem;
         }
 
-        .btn-sm {
-            padding: 0.5rem 1rem;
+        .btn-header {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 0.6rem 1.2rem;
             border-radius: 6px;
             font-size: 0.85rem;
             font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: background-color 0.2s;
+            white-space: nowrap;
         }
 
-        .btn-outline {
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
+        .btn-header:hover {
+            background-color: var(--accent-hover);
         }
 
-        .btn-outline:hover {
-            background-color: #f9fafb;
-            border-color: var(--text-muted);
-        }
-
-        /* --- Main Content --- */
+        /* --- Main Content Layout --- */
         .hero {
             text-align: center;
             padding: 5rem 1rem 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
         }
 
         .container {
@@ -104,27 +107,39 @@
             gap: 2rem;
             padding: 2rem;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 5rem;
         }
 
         .section-card {
             flex: 1;
             background: white;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2.5rem;
-            text-align: left;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .section-card:hover {
+            border-color: var(--accent-blue);
         }
 
         .section-card h2 {
             margin-top: 0;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .section-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         @media (max-width: 1024px) {
             .container { flex-direction: column; }
-            .main-header { padding: 0 2rem; }
-            .login-group { display: none; } /* Simplified for mobile */
+            .nav-links { gap: 1rem; }
+            .btn-header { padding: 0.5rem 0.8rem; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -134,35 +149,37 @@
         <a href="#" class="logo">GOV-TENDERS</a>
         
         <nav class="nav-links">
-            <a href="#" class="nav-link">Data & Insights</a>
+            <a href="data-insights.html" class="data-link">Data & Insights</a>
             
             <div class="login-group">
-                <a href="#" class="btn-sm btn-outline">User Login</a>
-                <a href="#" class="btn-sm btn-outline">Govt Login</a>
-                <a href="#" class="btn-sm btn-outline" style="background: var(--text-main); color: white;">Contractor Login</a>
+                <a href="user-login.html" class="btn-header">User Login</a>
+                <a href="govt-login.html" class="btn-header">Govt Login</a>
+                <a href="src/contractor_main.html" class="btn-header">Contractor Login</a>
             </div>
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Welcome to the Procurement Portal</h1>
-        <p style="color: var(--text-muted);">The central hub for government contracts and public sector opportunities.</p>
-    </section>
+    <main>
+        <section class="hero">
+            <h1>The Central Procurement Hub</h1>
+            <p>A transparent and secure marketplace connecting government entities with qualified contractors.</p>
+        </section>
 
-    <main class="container">
-        <div class="section-card">
-            <h2>Contractors</h2>
-            <p>Register as a vendor, bid on open projects, and track your active contracts.</p>
-        </div>
+        <div class="container">
+            <div class="section-card">
+                <h2>Contractors</h2>
+                <p>Register your business, browse active tenders, and submit digital bids for public projects.</p>
+            </div>
 
-        <div class="section-card">
-            <h2>Government</h2>
-            <p>Publish requirements, manage the bidding cycle, and select qualified partners.</p>
-        </div>
+            <div class="section-card">
+                <h2>Government</h2>
+                <p>Streamline the procurement lifecycle from publishing notices to awarding contracts.</p>
+            </div>
 
-        <div class="section-card">
-            <h2>Users</h2>
-            <p>Access public records, verify contract awards, and view budget allocations.</p>
+            <div class="section-card">
+                <h2>Public Users</h2>
+                <p>Access open data, view contract award history, and monitor government expenditure.</p>
+            </div>
         </div>
     </main>
 
