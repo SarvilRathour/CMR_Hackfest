@@ -139,7 +139,7 @@ class Blockchain{
       this.chain[this.chain.length-1].hash
     );
     this.chain.push(block);
-    this.save();
+    this.saveChain();
   }
   printChain(){
     console.log(JSON.stringify(this.chain,null,2));
@@ -257,5 +257,10 @@ program
   .command("ack")
   .requiredOption("-c, --contractor <name>")
   .action((o) => blockchain.addAcknowledgement(o.contractor));
+program
+  .command("complete-phase")
+  .requiredOption("-c, --contractor <name>")
+  .requiredOption("-p, --phase <phase>")
+  .action((o) => blockchain.addPhaseCompletion(o.contractor, o.phase));
 program.parse(process.argv);
 

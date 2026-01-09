@@ -37,5 +37,18 @@
     "previous_hash": "13f483a4e39d3820019d23cd737528c45c8ba75108c7a3bfeba0a4493fa556e1",
     "nonce": 0,
     "hash": "c870feb863282bdd2b0c20774cd99c46f302bf2e08bc20cf47285de0ad3e35a7"
+  },
+  {
+    "index": 3,
+    "timestamp": "2026-01-09T13:43:51.526Z",
+    "block_type": "PHASE_COMPLETED",
+    "payload": {
+      "contractor": "LT",
+      "phase": "1",
+      "proof": "03863f7c406239dd"
+    },
+    "previous_hash": "c870feb863282bdd2b0c20774cd99c46f302bf2e08bc20cf47285de0ad3e35a7",
+    "nonce": 0,
+    "hash": "713ad6400fd20e068049cad2611abce712643d393fc4be74ffd1a76ec8905505"
   }
 ]
