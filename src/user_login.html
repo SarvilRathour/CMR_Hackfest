@@ -44,7 +44,13 @@
       padding: 0.75rem;
       border: 1px solid #d1d5db;
       border-radius: 6px;
-      box-sizing: border-box; /* Fixes padding issues */
+      box-sizing: border-box; 
+    }
+    /* Visual cue for focus */
+    input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
     button {
       width: 100%;
@@ -67,13 +73,19 @@
     <h2>Citizen Login</h2>
     
     <div class="form-group">
-      <label>Wallet / Home Address</label>
-      <input type="text" id="address" placeholder="e.g. 0x123... or 12th Street">
+      <label>Home Address</label>
+      <input type="text" id="address" placeholder="e.g. chandani chowk etc.">
     </div>
 
     <div class="form-group">
       <label>Aadhaar Number</label>
-      <input type="text" id="aadhaar" placeholder="Enter Aadhaar Number">
+      <input 
+        type="text" 
+        id="aadhaar" 
+        placeholder="Enter 12-digit Aadhaar Number" 
+        maxlength="12" 
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+      >
     </div>
 
     <button onclick="handleLogin()">Login</button>
@@ -86,14 +98,22 @@
       const aadhaar = document.getElementById('aadhaar').value.trim();
       const errorMsg = document.getElementById('error-msg');
 
+      // Clear previous errors
+      errorMsg.textContent = "";
+
+      // 1. Check for Empty Fields
       if (!address || !aadhaar) {
         errorMsg.textContent = "Please fill in all fields.";
         return;
       }
 
+      // 2. Validate Aadhaar Length (Must be exactly 12)
+      if (aadhaar.length !== 12) {
+        errorMsg.textContent = "Invalid Aadhaar. Must be exactly 12 digits.";
+        return;
+      }
+
       // SESSION UNIQUENESS:
-      // We use sessionStorage here. This data is lost if the tab is closed.
-      // This ensures the "Active Session" is temporary.
       sessionStorage.setItem('active_aadhaar', aadhaar);
       sessionStorage.setItem('active_address', address);
 

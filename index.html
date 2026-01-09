@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Government Tender Portal</title>
+    <title>Government Portal & Voting System</title>
     <style>
         :root {
-            --bg-color: #ffffff;
+            --bg-color: #f8fafc;
             --nav-bg: #ffffff;
-            --border-color: #f3f4f6;
-            --text-main: #111827;
-            --text-muted: #6b7280;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
             --accent-blue: #2563eb; 
             --accent-hover: #1d4ed8;
             --nav-height: 80px;
@@ -38,32 +38,26 @@
             justify-content: space-between;
             padding: 0 5%;
             z-index: 1000;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
         .logo {
             font-weight: 800;
-            font-size: 1.4rem;
-            color: var(--text-main);
+            font-size: 1.5rem;
+            color: var(--accent-blue);
             text-decoration: none;
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .logo span { color: var(--text-main); }
 
         .nav-links {
             display: flex;
             align-items: center;
             gap: 2rem;
-        }
-
-        .data-link {
-            text-decoration: none;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .data-link:hover {
-            color: var(--accent-blue);
         }
 
         .login-group {
@@ -72,38 +66,60 @@
         }
 
         .btn-header {
-            background-color: var(--accent-blue);
-            color: white;
             padding: 0.6rem 1.2rem;
             border-radius: 6px;
             font-size: 0.85rem;
             font-weight: 600;
             text-decoration: none;
-            transition: background-color 0.2s;
-            white-space: nowrap;
+            transition: all 0.2s;
         }
 
-        .btn-header:hover {
+        .btn-outline {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            background: white;
+        }
+        .btn-outline:hover {
+            border-color: var(--text-muted);
+            background: #f1f5f9;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+            border: 1px solid var(--accent-blue);
+        }
+        .btn-primary:hover {
             background-color: var(--accent-hover);
         }
 
         /* --- Main Content Layout --- */
         .hero {
             text-align: center;
-            padding: 5rem 1rem 3rem;
+            padding: 6rem 1rem 4rem;
             max-width: 800px;
             margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
+            margin: 0 0 1.5rem 0;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 auto;
+            max-width: 600px;
+            line-height: 1.6;
         }
 
         .container {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             padding: 2rem;
             max-width: 1200px;
@@ -111,16 +127,19 @@
         }
 
         .section-card {
-            flex: 1;
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 3rem 2rem;
-            text-align: center;
-            transition: border-color 0.3s;
+            padding: 2.5rem 2rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             border-color: var(--accent-blue);
         }
 
@@ -128,57 +147,69 @@
             margin-top: 0;
             font-size: 1.5rem;
             color: var(--text-main);
+            margin-bottom: 0.75rem;
         }
 
         .section-card p {
             color: var(--text-muted);
             line-height: 1.6;
             font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
+        .card-link {
+            display: inline-block;
+            color: var(--accent-blue);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .card-link:hover { text-decoration: underline; }
+
         @media (max-width: 1024px) {
-            .container { flex-direction: column; }
+            .container { grid-template-columns: 1fr; }
             .nav-links { gap: 1rem; }
-            .btn-header { padding: 0.5rem 0.8rem; font-size: 0.75rem; }
+            .hero h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <a href="#" class="logo">GOV-TENDERS</a>
+        <a href="index.html" class="logo">GOV<span>PORTAL</span></a>
         
         <nav class="nav-links">
-            <a href="data-insights.html" class="data-link">Data & Insights</a>
-            
             <div class="login-group">
-                <a href="src/user_login.html" class="btn-header">User Login</a>
-                <a href="src/gov_login.html" class="btn-header">Govt Login</a>
-                <a href="src/contractor_main.html" class="btn-header">Contractor Login</a>
+                <a href="src/gov_login.html" class="btn-header btn-outline">Govt Login</a>
+                <a href="src/contractor_main.html" class="btn-header btn-outline">Contractor</a>
+                <a href="src/user_login.html" class="btn-header btn-primary">User Login</a>
             </div>
         </nav>
     </header>
 
     <main>
         <section class="hero">
-            <h1>The Central Procurement Hub</h1>
-            <p>A transparent and secure marketplace connecting government entities with qualified contractors.</p>
+            <h1>Unified Digital Governance</h1>
+            <p>A transparent platform connecting citizens, contractors, and government entities for a better tomorrow.</p>
         </section>
 
         <div class="container">
             <div class="section-card">
+                <h2>User & Voting</h2>
+                <p>Participate in democracy. Log in securely with your Aadhaar to cast your vote and view your voting history.</p>
+                <a href="src/user_login.html" class="card-link">User Login &rarr;</a>
+            </div>
+
+            <div class="section-card">
                 <h2>Contractors</h2>
-                <p>Register your business, browse active tenders, and submit digital bids for public projects.</p>
+                <p>Access government tenders, submit digital bids, and track project status in real-time.</p>
+                <a href="src/contractor_main.html" class="card-link">View Tenders &rarr;</a>
             </div>
 
             <div class="section-card">
                 <h2>Government</h2>
-                <p>Streamline the procurement lifecycle from publishing notices to awarding contracts.</p>
-            </div>
-
-            <div class="section-card">
-                <h2>Public Users</h2>
-                <p>Access open data, view contract award history, and monitor government expenditure.</p>
+                <p>Administrative access to manage elections, publish tenders, and review contractor submissions.</p>
+                <a href="src/gov_login.html" class="card-link">Admin Access &rarr;</a>
             </div>
         </div>
     </main>
