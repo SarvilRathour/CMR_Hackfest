@@ -8,7 +8,7 @@
   <style>
     :root {
       --bg-color: #ffffff;
-      --border-color: #e5e7eb; /* Slightly darker for better definition */
+      --border-color: #e5e7eb;
       --text-main: #111827;
       --text-muted: #6b7280;
       --accent-blue: #2563eb;
@@ -24,7 +24,6 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      /* Subtle gradient to match a professional portal feel */
       background: radial-gradient(circle at top right, #f9fafb, #ffffff);
     }
 
@@ -33,7 +32,7 @@
       max-width: 400px;
       background: white;
       border: 1px solid var(--border-color);
-      border-radius: 16px; /* Matches contractor card radius */
+      border-radius: 16px;
       padding: 3rem 2.5rem;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
       text-align: center;
@@ -120,7 +119,6 @@
     }
   </style>
 </head>
-
 <body>
 
   <div class="login-card">
@@ -134,7 +132,7 @@
 
     <div class="form-group">
       <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter provided password ">
+      <input type="password" id="password" placeholder="Enter provided password">
     </div>
 
     <button onclick="login()">Sign In</button>
@@ -154,12 +152,12 @@
       const pass = document.getElementById("password").value;
       const errorDiv = document.getElementById("error");
 
-      if (userId === correctID && pass === correctPassword) {
-        // Successful redirection
-        window.location.href = "gov_dashboard.html";
+      // Check if the ID exists and if the password matches
+      if (validCredentials[userId] && validCredentials[userId] === pass) {
+        // Redirection to the specific requested page
+        window.location.href = "./gov_issue_tender.html";
       } else {
-        // Shake effect or simple error message
-        errorDiv.innerText = "Invalid Official ID or Password.";
+        errorDiv.innerText = "Incorrect credentials.";
         document.getElementById("password").value = "";
       }
     }
