@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Tender Portal</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --nav-bg: #ffffff;
+            --border-color: #f3f4f6;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent-blue: #2563eb;
+            --nav-height: 70px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding-top: var(--nav-height); /* Prevent content from hiding under sticky nav */
+        }
+
+        /* --- Header Section --- */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Distinctive Login Buttons in Header */
+        .login-group {
+            display: flex;
+            gap: 0.75rem;
+            border-left: 1px solid var(--border-color);
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+            border-color: var(--text-muted);
+        }
+
+        /* --- Main Content --- */
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem 3rem;
+        }
+
+        .container {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-card {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: left;
+        }
+
+        .section-card h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container { flex-direction: column; }
+            .main-header { padding: 0 2rem; }
+            .login-group { display: none; } /* Simplified for mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="#" class="logo">GOV-TENDERS</a>
+        
+        <nav class="nav-links">
+            <a href="#" class="nav-link">Data & Insights</a>
+            
+            <div class="login-group">
+                <a href="#" class="btn-sm btn-outline">User Login</a>
+                <a href="#" class="btn-sm btn-outline">Govt Login</a>
+                <a href="#" class="btn-sm btn-outline" style="background: var(--text-main); color: white;">Contractor Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Welcome to the Procurement Portal</h1>
+        <p style="color: var(--text-muted);">The central hub for government contracts and public sector opportunities.</p>
+    </section>
+
+    <main class="container">
+        <div class="section-card">
+            <h2>Contractors</h2>
+            <p>Register as a vendor, bid on open projects, and track your active contracts.</p>
+        </div>
+
+        <div class="section-card">
+            <h2>Government</h2>
+            <p>Publish requirements, manage the bidding cycle, and select qualified partners.</p>
+        </div>
+
+        <div class="section-card">
+            <h2>Users</h2>
+            <p>Access public records, verify contract awards, and view budget allocations.</p>
+        </div>
+    </main>
+
+</body>
+</html>
