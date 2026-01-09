@@ -1,0 +1,26 @@
+[
+  {
+    "contractor": "L&T",
+    "timestamp": "2026-01-09T10:29:04.391Z",
+    "nonce": 100389,
+    "hash": "0000e7e5f40014fc3242523861c4ec8866bc5c3122c7e249ca20fe4e02f6ed96",
+    "difficulty": 4,
+    "target_hash": "d38259be57c2fdd5ac18f8c793fa40a7f24f47f6c26de66fff1107c5edfd4dd1"
+  },
+  {
+    "contractor": "Sagar construction",
+    "timestamp": "2026-01-09T10:29:16.035Z",
+    "nonce": 224477,
+    "hash": "000049dd774ab4897e217c7e6eeabe006f1c361ea7c9b9ca29e34a2d1873bd42",
+    "difficulty": 4,
+    "target_hash": "d38259be57c2fdd5ac18f8c793fa40a7f24f47f6c26de66fff1107c5edfd4dd1"
+  },
+  {
+    "contractor": "Sarvil construction",
+    "timestamp": "2026-01-09T10:29:25.055Z",
+    "nonce": 130261,
+    "hash": "000076a57a8dbfb7197dbe9e045e58bb278402d728db04d4f2af3f36e0ac98ea",
+    "difficulty": 4,
+    "target_hash": "d38259be57c2fdd5ac18f8c793fa40a7f24f47f6c26de66fff1107c5edfd4dd1"
+  }
+]
