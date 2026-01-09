@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Government Official Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Official Login | Gov-Tenders</title>
 
   <style>
     :root {
@@ -22,6 +23,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: var(--text-main);
     }
 
     .login-card {
@@ -37,6 +39,7 @@
       font-size: 1.25rem;
       font-weight: 600;
       text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     .form-group {
@@ -58,6 +61,12 @@
       border-radius: 6px;
       font-size: 0.9rem;
       outline: none;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+    }
+
+    input:focus {
+      border-color: var(--accent-blue);
     }
 
     input:focus {
@@ -75,6 +84,10 @@
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 10px;
+      transition: opacity 0.2s;
     }
 
     button:hover {
@@ -108,25 +121,28 @@
     <button onclick="login()">Sign In</button>
 
     <div id="error" class="error"></div>
+    
+    <a href="../index.html" class="back-home">Return to Homepage</a>
   </div>
 
   <script>
     function login() {
       const correctUsername = "admin";
       const correctPassword = "gov@123";
+      const correctProject = "P101";
 
       const username = document.getElementById("username").value;
+      const project = document.getElementById("projectid").value;
       const password = document.getElementById("password").value;
 
       if (username === correctUsername && password === correctPassword) {
         window.location.href = "dashboard.html";
       } else {
         document.getElementById("error").innerText =
-          "Invalid credentials. Access denied.";
+          "Invalid credentials or Project ID. Access denied.";
       }
     }
   </script>
 
 </body>
 </html>
-
