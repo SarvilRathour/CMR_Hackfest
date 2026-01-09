@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Government Official Login</title>
+  <title>Citizen Login</title>
 
   <style>
     :root {
@@ -25,7 +25,7 @@
     }
 
     .login-card {
-      width: 360px;
+      width: 380px;
       background: white;
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -33,14 +33,14 @@
     }
 
     .login-card h2 {
-      margin: 0 0 1.5rem;
+      margin: 0 0 1.75rem;
       font-size: 1.25rem;
       font-weight: 600;
       text-align: center;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
     }
 
     label {
@@ -67,7 +67,7 @@
     button {
       width: 100%;
       margin-top: 1rem;
-      padding: 0.7rem;
+      padding: 0.75rem;
       background-color: var(--accent-blue);
       color: white;
       border: none;
@@ -81,11 +81,18 @@
       opacity: 0.95;
     }
 
-    .error {
-      margin-top: 0.75rem;
+    .message {
+      margin-top: 1rem;
       font-size: 0.85rem;
-      color: red;
       text-align: center;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+
+    .success {
+      color: #16a34a;
     }
   </style>
 </head>
@@ -93,37 +100,55 @@
 <body>
 
   <div class="login-card">
-    <h2>Government Official Login</h2>
+    <h2>Citizen Login</h2>
 
     <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter username">
+      <label for="address">Address</label>
+      <input type="text" id="address" placeholder="Enter your address">
     </div>
 
     <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter password">
+      <label for="aadhaar">Aadhaar Number</label>
+      <input type="text" id="aadhaar" placeholder="Enter Aadhaar number">
     </div>
 
-    <button onclick="login()">Sign In</button>
+    <button onclick="loginUser()">Proceed</button>
 
-    <div id="error" class="error"></div>
+    <div id="message" class="message"></div>
   </div>
 
   <script>
-    function login() {
-      const correctUsername = "admin";
-      const correctPassword = "gov@123";
+    function loginUser() {
+      const address = document.getElementById("address").value.trim();
+      const aadhaar = document.getElementById("aadhaar").value.trim();
+      const message = document.getElementById("message");
 
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      if (username === correctUsername && password === correctPassword) {
-        window.location.href = "dashboard.html";
-      } else {
-        document.getElementById("error").innerText =
-          "Invalid credentials. Access denied.";
+      if (!address || !aadhaar) {
+        message.textContent = "Both fields are required.";
+        message.className = "message error";
+        return;
       }
+
+      // Unique session key (one-time per session)
+      const userKey = address.toLowerCase() + "_" + aadhaar;
+
+      // Check if already logged in during this session
+      if (sessionStorage.getItem(userKey)) {
+        message.textContent =
+          "You have already logged in during this session.";
+        message.className = "message error";
+        return;
+      }
+
+      // Store login session
+      sessionStorage.setItem(userKey, "logged");
+
+      message.textContent = "Login successful. You may proceed.";
+      message.className = "message success";
+
+      setTimeout(() => {
+        window.location.href = "user-dashboard.html";
+      }, 1500);
     }
   </script>
 
