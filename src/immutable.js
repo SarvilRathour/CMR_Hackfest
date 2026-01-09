@@ -5,8 +5,6 @@ const crypto = require("crypto");
 const program = new Command();
 const CHAIN_FILE = "QC.json";
 
-/* ---------------- BLOCK ---------------- */
-
 class Block {
   constructor(index, timestamp, payload, previous_hash) {
     this.index = index;
