@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Management Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .accordion-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion-wrapper.active { grid-template-rows: 1fr; }
+        .accordion-content { overflow: hidden; }
+
+        .glass-input {
+            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
+        }
+
+        .btn-primary {
+            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-2;
+        }
+
+        /* Animation for success message */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
+    </style>
+</head>
+
+<body class="bg-[#F4F7FE] min-h-screen pb-20">
+
+<div class="max-w-4xl mx-auto px-6 pt-12">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div class="text-center md:text-left">
+            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Internal Administration</span>
+            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Tender Control Panel</h1>
+        </div>
+        
+        <button onclick="handleLogout()" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+        </button>
+    </header>
+
+    <div id="successToast" class="hidden mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-4 animate-slide">
+        <div class="bg-emerald-500 p-2 rounded-full text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <div>
+            <p class="text-emerald-800 font-bold">Tender Published Successfully</p>
+            <p class="text-emerald-600 text-sm">Project ID: <span id="generatedIdDisplay" class="font-mono bg-emerald-100 px-2 py-0.5 rounded"></span></p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden mb-8">
+        <button onclick="toggleAccordion('issueSection', 'issueIcon')"
+                class="w-full flex justify-between items-center p-8 text-left hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-5">
+                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-indigo-100 shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Draft New Tender</h2>
+                    <p class="text-sm text-slate-400">Specify project phases and requirements</p>
+                </div>
+            </div>
+            <div id="issueIcon" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </button>
+
+        <div id="issueSection" class="accordion-wrapper active">
+            <div class="accordion-content">
+                <div class="p-8 pt-0 border-t border-slate-50">
+                    <div class="space-y-6 mt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Project Title</label>
+                                <input id="projectTitle" type="text" class="glass-input" placeholder="Enter formal title">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Jurisdiction</label>
+                                <select class="glass-input">
+                                    <option>Municipal Council</option>
+                                    <option>State Authority</option>
+                                    <option>Central Registry</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Scope of Work</label>
+                            <textarea class="glass-input resize-none" rows="3" placeholder="Define the primary project scope..."></textarea>
+                        </div>
+
+                        <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                                <h3 class="font-bold text-indigo-900 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg>
+                                    Project Milestones
+                                </h3>
+                                <div class="flex items-center bg-white border border-indigo-200 rounded-xl px-3 py-1">
+                                    <span class="text-xs font-bold text-indigo-400 mr-3 uppercase">Total Phases</span>
+                                    <input type="number" id="phaseInput" min="3" max="12" value="3" oninput="generatePhases()"
+                                        class="w-12 text-center font-bold text-indigo-600 outline-none">
+                                </div>
+                            </div>
+                            <div id="phasesContainer" class="grid grid-cols-1 gap-4"></div>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button onclick="publishTender()" class="btn-primary w-full md:w-auto">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"></path></svg>
+                                Publish Tender
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+        <button onclick="toggleAccordion('revokeSection', 'revokeIcon')"
+                class="w-full flex justify-between items-center p-8 text-left hover:bg-rose-50/30 transition-colors">
+            <div class="flex items-center gap-5">
+                <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Revoke Tender</h2>
+                    <p class="text-sm text-slate-400">Withdraw an existing project from public view</p>
+                </div>
+            </div>
+            <div id="revokeIcon" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </button>
+
+        <div id="revokeSection" class="accordion-wrapper">
+            <div class="accordion-content">
+                <div class="p-8 pt-0 border-t border-slate-50">
+                    <div class="max-w-2xl mt-6">
+                        <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Target Project ID</label>
+                        <select class="glass-input mb-6">
+                            <option>TMT-10928: Urban Expressway</option>
+                            <option>TMT-55291: Solar Grid Install</option>
+                        </select>
+
+                        <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Reason for Revocation</label>
+                        <input type="text" placeholder="Press Enter to add reason..." id="revoke-input"
+                            class="glass-input mb-4" onkeydown="addRevokeReason(event)">
+                        <ul id="revoke-list" class="space-y-2 mb-8"></ul>
+
+                        <button class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-all">
+                            Finalize Revocation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function saveTenderToLocalStorage(tenderId) {
+  const title = document.getElementById("projectTitle").value.trim();
+  const jurisdiction = document.querySelector("select").value;
+  const scope = document.querySelector("textarea").value.trim();
+  const phaseCount = parseInt(document.getElementById("phaseInput").value, 10);
+
+  const phases = [];
+
+  for (let i = 1; i <= phaseCount; i++) {
+    const reqContainer = document.getElementById(`req-list-${i}`);
+    const requirements = [];
+
+    if (reqContainer) {
+      reqContainer.querySelectorAll("span").forEach(span => {
+        requirements.push(span.textContent.trim());
+      });
+    }
+
+    phases.push({
+      phase: i,
+      requirements
+    });
+  }
+
+  const tender = {
+    id: tenderId,
+    title,
+    jurisdiction,
+    scope,
+    phases,
+    createdAt: new Date().toISOString()
+  };
+
+  const existing = JSON.parse(localStorage.getItem("tenders")) || [];
+  existing.push(tender);
+  localStorage.setItem("tenders", JSON.stringify(existing));
+}
+
+
+
+    function handleLogout() {
+        // Here you would typically clear localStorage/cookies
+        // localStorage.removeItem('user_token');
+        
+        // Redirect to index.html
+        window.location.href = "./../index.html";
+    }
+
+    function toggleAccordion(contentId, iconId) {
+        const wrapper = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        wrapper.classList.toggle('active');
+        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    function generatePhases() {
+        const container = document.getElementById('phasesContainer');
+        const count = parseInt(document.getElementById('phaseInput').value);
+        if (isNaN(count) || count < 3 || count > 12) return;
+
+        container.innerHTML = "";
+        for (let i = 1; i <= count; i++) {
+            container.insertAdjacentHTML("beforeend", `
+                <div class="bg-white p-4 rounded-xl border border-indigo-100 flex flex-col md:flex-row gap-4 items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase mt-1">P${i}</span>
+                    <div class="flex-1 w-full">
+                        <input type="text" placeholder="Requirement for phase ${i} (Press Enter)" 
+                            class="w-full text-sm border-none focus:ring-0 p-0 text-slate-700 placeholder:text-slate-300" 
+                            onkeydown="addRequirement(event, ${i})" id="req-input-${i}">
+                        <div id="req-list-${i}" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    function addRequirement(event, phaseId) {
+        if (event.key !== "Enter" || !event.target.value.trim()) return;
+        event.preventDefault();
+        const list = document.getElementById(`req-list-${phaseId}`);
+        const tag = document.createElement("span");
+        tag.className = "bg-slate-100 text-slate-600 text-[11px] font-bold px-2 py-1 rounded-lg border border-slate-200 animate-slide";
+        tag.textContent = event.target.value;
+        list.appendChild(tag);
+        event.target.value = "";
+    }
+    
+
+    function publishTender() {
+        const title = document.getElementById('projectTitle').value;
+        const scope = document.querySelector("textarea");
+        const jurisdiction = document.querySelector("select");
+        const phaseInput = document.getElementById('phaseInput');
+
+        if (!title) {
+            alert("Please enter a project title");
+            return;
+        }
+
+        const randomNum = Math.floor(10000 + Math.random() * 90000);
+        const newId = `TMT-${randomNum}`;
+
+        document.getElementById('generatedIdDisplay').textContent = newId;
+
+        saveTenderToLocalStorage(newId);
+
+        const toast = document.getElementById('successToast');
+        toast.classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // --- RESET FIELDS ---
+        document.getElementById('projectTitle').value = "";
+        if (scope) scope.value = "";
+        if (jurisdiction) jurisdiction.selectedIndex = 0;
+        
+        // Reset milestones to default (3 phases)
+        phaseInput.value = 3;
+        generatePhases(); 
+    }
+
+    function generatePhases() {
+        const container = document.getElementById('phasesContainer');
+        const phaseInput = document.getElementById('phaseInput');
+        const count = parseInt(phaseInput.value);
+        
+        if (isNaN(count) || count < 3 || count > 12) return;
+
+        container.innerHTML = "";
+        for (let i = 1; i <= count; i++) {
+            container.insertAdjacentHTML("beforeend", `
+                <div class="bg-white p-4 rounded-xl border border-indigo-100 flex flex-col md:flex-row gap-4 items-start shadow-sm">
+                    <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase mt-1">P${i}</span>
+                    <div class="flex-1 w-full">
+                        <input type="text" placeholder="Requirement for phase ${i} (Press Enter)" 
+                            class="w-full text-sm border-none focus:ring-0 p-0 text-slate-700 placeholder:text-slate-300" 
+                            onkeydown="addRequirement(event, ${i})" id="req-input-${i}">
+                        <div id="req-list-${i}" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+
+    // function publishTender() {
+    // const title = document.getElementById('projectTitle').value;
+    // if (!title) {
+    //     alert("Please enter a project title");
+    //     return;
+    // }
+
+    // const randomNum = Math.floor(10000 + Math.random() * 90000);
+    // const newId = `TMT-${randomNum}`;
+
+    // document.getElementById('generatedIdDisplay').textContent = newId;
+
+    // saveTenderToLocalStorage(newId);
+
+    // const toast = document.getElementById('successToast');
+    // toast.classList.remove('hidden');
+
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // document.getElementById('projectTitle').value = "";
+    // generatePhases();
+    // }
+
+    // function addRevokeReason(event) {
+    //     if (event.key !== "Enter" || !event.target.value.trim()) return;
+    //     event.preventDefault();
+    //     const list = document.getElementById("revoke-list");
+    //     const li = document.createElement("li");
+    //     li.className = "flex items-center gap-3 text-sm text-rose-700 font-medium bg-rose-50 px-4 py-2 rounded-lg animate-slide";
+    //     li.innerHTML = `<span class="w-1.5 h-1.5 bg-rose-400 rounded-full"></span> ${event.target.value}`;
+    //     list.appendChild(li);
+    //     event.target.value = "";
+    // }
+    window.onload = generatePhases;
+</script>
+
+</body>
+</html>

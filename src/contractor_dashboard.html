@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor Portal | Gov-Tenders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .accordion-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion-wrapper.active { grid-template-rows: 1fr; }
+        .accordion-content { overflow: hidden; }
+
+        .glass-input {
+            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
+        }
+
+        .btn-apply {
+            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all active:scale-95 text-sm;
+        }
+
+        .status-badge {
+            @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
+    </style>
+</head>
+
+<body class="bg-[#F4F7FE] min-h-screen pb-20">
+
+<div class="max-w-5xl mx-auto px-6 pt-12">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div class="text-center md:text-left">
+            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Vendor Dashboard</span>
+            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Project Workspace</h1>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-bold text-slate-800">Alpha Construction Ltd.</p>
+                <p class="text-xs text-slate-400">ID: VEND-99281</p>
+            </div>
+            <button onclick="window.location.href='../index.html'" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="mb-12">
+        <div class="flex items-center gap-2 mb-6">
+            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
+            <h2 class="text-2xl font-bold text-slate-800">Ongoing Contracts</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-8">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
+                        <div>
+                            <span class="status-badge bg-emerald-100 text-emerald-600">Active Phase: 03</span>
+                            <h3 class="text-xl font-bold text-slate-800 mt-2">Smart City Grid Expansion</h3>
+                            <p class="text-sm text-slate-400">Contract ID: #TMT-88210</p>
+                        </div>
+                        <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="text-indigo-600 font-bold text-sm hover:underline flex items-center gap-1">
+                            Add Progress Block 
+                            <svg id="updateIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="w-full bg-slate-100 h-3 rounded-full mb-2">
+                        <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
+                    </div>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">45% Total Completion</p>
+
+                    <div id="updateSection" class="accordion-wrapper">
+                        <div class="accordion-content">
+                            <div class="mt-8 pt-8 border-t border-slate-100">
+                                <h4 class="font-bold text-slate-800 mb-4">Submit New Project Block</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" class="glass-input" placeholder="Block Title (e.g. Sub-structure foundation)">
+                                    <input type="date" class="glass-input">
+                                    <textarea class="glass-input md:col-span-2" rows="2" placeholder="Describe work completed in this block..."></textarea>
+                                    <div class="md:col-span-2 flex justify-end">
+                                        <button onclick="alert('Block submitted for Gov approval!')" class="btn-apply">Submit Block for Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="flex items-center gap-2 mb-6">
+            <div class="w-2 h-6 bg-amber-500 rounded-full"></div>
+            <h2 class="text-2xl font-bold text-slate-800">Open Government Tenders</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
+                    <span class="text-xs font-mono text-slate-400">ID: PRJ-901</span>
+                </div>
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Municipal Solar Park</h3>
+                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Installation of 500kW solar panels across municipal rooftops including maintenance for 5 years.</p>
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="text-xs text-slate-400">
+                        <p>Closing Date:</p>
+                        <p class="font-bold text-slate-600">Oct 24, 2026</p>
+                    </div>
+                    <button class="btn-apply">Apply Now</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
+                    <span class="text-xs font-mono text-slate-400">ID: PRJ-442</span>
+                </div>
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Bridge Reinforcement Ph-II</h3>
+                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Structural audit and reinforcement of the East-Wing bypass bridge system.</p>
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="text-xs text-slate-400">
+                        <p>Closing Date:</p>
+                        <p class="font-bold text-slate-600">Nov 12, 2026</p>
+                    </div>
+                    <button class="btn-apply">Apply Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleAccordion(contentId, iconId) {
+        const wrapper = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        wrapper.classList.toggle('active');
+        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+</script>
+
+</body>
+</html>
