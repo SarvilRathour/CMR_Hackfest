@@ -5,188 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contractor Portal | Gov-Tenders</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         
         .accordion-wrapper {
             display: grid;
             grid-template-rows: 0fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: grid-template-rows 0.3s ease-out;
         }
         .accordion-wrapper.active { grid-template-rows: 1fr; }
         .accordion-content { overflow: hidden; }
 
-        .glass-input {
-            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
+        .input-standard {
+            @apply w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all outline-none text-slate-800 text-sm text-center;
         }
 
-        .btn-apply {
-            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all active:scale-95 text-sm;
+        .btn-indigo {
+            @apply w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold transition-all active:scale-[0.98] text-sm flex items-center justify-center gap-2;
         }
 
-        .status-badge {
-            @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+        .status-pill {
+            @apply px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
-
-        /* Auth Overlay Styles */
-        #authOverlay {
-            backdrop-filter: blur(8px);
-            transition: all 0.5s ease;
-        }
+        .hidden-state { display: none !important; }
     </style>
 </head>
+<body>
 
-<body class="bg-[#F4F7FE] min-h-screen pb-20">
-
-<div id="authOverlay" class="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-md p-8 md:p-10 rounded-[2.5rem] shadow-2xl animate-slide">
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-indigo-200">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+<div id="loginSection" class="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
+    <div class="w-full max-w-md text-center">
+        <div class="flex flex-col items-center gap-3 mb-8">
+            <div class="bg-indigo-600 p-3 rounded-xl shadow-lg shadow-indigo-100">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
             </div>
-            <h2 id="authTitle" class="text-3xl font-extrabold text-slate-900">Contractor Login</h2>
-            <p id="authSub" class="text-slate-500 mt-2">Enter your credentials to access the workspace</p>
+            <span class="text-2xl font-black text-slate-900 tracking-tight">Gov-Tenders</span>
         </div>
 
-        <div class="space-y-4">
-            <input type="text" id="authUser" placeholder="Official Username" class="glass-input !bg-slate-50">
-            <input type="password" id="authPass" placeholder="Security Password" class="glass-input !bg-slate-50">
-            <button onclick="handleAuth()" id="authBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95">
-                Sign In
-            </button>
-            <p class="text-center text-sm text-slate-500">
-                <span id="modeText">New to the portal?</span> 
-                <button onclick="toggleAuthMode()" id="toggleBtn" class="text-indigo-600 font-bold hover:underline">Create Account</button>
-            </p>
-            <p id="authError" class="text-center text-rose-500 text-xs font-bold h-4"></p>
+        <div class="bg-white px-8 py-10 border border-slate-100 rounded-3xl shadow-xl shadow-slate-200/50">
+            <h1 id="authTitle" class="text-2xl font-bold text-slate-900">Contractor Login</h1>
+            <p id="authSub" class="text-slate-500 text-sm mt-2 mb-10">Access your project workspace</p>
+
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</label>
+                    <input type="text" id="authUser" class="input-standard" placeholder="Enter ID">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Security Password</label>
+                    <input type="password" id="authPass" class="input-standard" placeholder="••••••••">
+                </div>
+                
+                <p id="authError" class="text-rose-500 text-xs font-semibold h-4"></p>
+
+                <button onclick="handleAuth()" id="authBtn" class="btn-indigo mt-4">
+                    Sign In
+                </button>
+                
+                <div class="pt-8 mt-4 border-t border-slate-50">
+                    <p class="text-sm text-slate-500">
+                        <span id="modeText">New vendor?</span> 
+                        <button onclick="toggleAuthMode()" id="toggleBtn" class="text-indigo-600 font-bold hover:underline ml-1">Create Account</button>
+                    </p>
+                </div>
+            </div>
         </div>
+        <p class="mt-8 text-slate-400 text-[10px] font-medium tracking-widest uppercase">Secure 256-bit Encrypted Portal</p>
     </div>
 </div>
 
-<div id="dashboardContent" class="max-w-5xl mx-auto px-6 pt-12 opacity-0 transition-opacity duration-700">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <div class="text-center md:text-left">
-            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Vendor Dashboard</span>
-            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Project Workspace</h1>
+<div id="dashboardContent" class="hidden-state min-h-screen">
+    <nav class="bg-white border-b border-slate-100 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-900 text-lg tracking-tight">Gov-Tenders</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <p id="displayUserName" class="text-sm font-bold text-slate-900">User</p>
+                    <p class="text-[10px] text-indigo-600 font-bold uppercase tracking-widest">Verified Vendor</p>
+                </div>
+                <button onclick="handleLogout()" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors uppercase">
+                    Logout
+                </button>
+            </div>
         </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 py-12 text-center sm:text-left">
+        <h2 class="text-3xl font-bold text-slate-900 mb-8">Ongoing Contracts</h2>
         
-        <div class="flex items-center gap-3">
-            <div class="text-right hidden md:block">
-                <p id="displayUserName" class="text-sm font-bold text-slate-800">Contractor Name</p>
-                <p class="text-xs text-slate-400 uppercase tracking-tighter">Verified Official</p>
+        <div class="bg-white border border-slate-100 rounded-3xl shadow-lg shadow-slate-100 p-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-8">
+                <div class="text-center sm:text-left">
+                    <span class="status-pill bg-emerald-50 text-emerald-600 border-emerald-100">Active Phase: 03</span>
+                    <h3 class="text-xl font-bold text-slate-900 mt-3">Smart City Grid Expansion</h3>
+                    <p class="text-xs text-slate-400 font-mono mt-1">#TMT-88210</p>
+                </div>
+                <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-indigo-600 transition-colors">
+                    Add Progress Block
+                </button>
             </div>
-            <button onclick="handleLogout()" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
-                Logout
-            </button>
-        </div>
-    </header>
 
-    <div class="mb-12">
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Ongoing Contracts</h2>
-        </div>
+            <div class="w-full bg-slate-100 h-3 rounded-full mb-3">
+                <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
+            </div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">45% Completion Rate</p>
 
-        <div class="grid grid-cols-1 gap-4">
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-8">
-                    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
-                        <div>
-                            <span class="status-badge bg-emerald-100 text-emerald-600">Active Phase: 03</span>
-                            <h3 class="text-xl font-bold text-slate-800 mt-2">Smart City Grid Expansion</h3>
-                            <p class="text-sm text-slate-400">Contract ID: #TMT-88210</p>
-                        </div>
-                        <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="text-indigo-600 font-bold text-sm hover:underline flex items-center gap-1">
-                            Add Progress Block 
-                            <svg id="updateIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="w-full bg-slate-100 h-3 rounded-full mb-2">
-                        <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">45% Total Completion</p>
-
-                    <div id="updateSection" class="accordion-wrapper">
-                        <div class="accordion-content">
-                            <div class="mt-8 pt-8 border-t border-slate-100">
-                                <h4 class="font-bold text-slate-800 mb-4">Submit New Project Block</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" class="glass-input" placeholder="Block Title (e.g. Sub-structure foundation)">
-                                    <input type="date" class="glass-input">
-                                    <textarea class="glass-input md:col-span-2" rows="2" placeholder="Describe work completed in this block..."></textarea>
-                                    <div class="md:col-span-2 flex justify-end">
-                                        <button onclick="alert('Block submitted for Gov approval!')" class="btn-apply">Submit Block for Review</button>
-                                    </div>
-                                </div>
-                            </div>
+            <div id="updateSection" class="accordion-wrapper mt-4">
+                <div class="accordion-content">
+                    <div class="pt-8 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" class="input-standard" placeholder="Block Name">
+                        <input type="date" class="input-standard">
+                        <textarea class="input-standard md:col-span-2" rows="3" placeholder="Work summary..."></textarea>
+                        <div class="md:col-span-2 flex justify-center">
+                            <button onclick="alert('Submitted')" class="btn-indigo max-w-xs">Upload Block</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div>
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-amber-500 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Open Government Tenders</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-901</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Municipal Solar Park</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Installation of 500kW solar panels across municipal rooftops including maintenance for 5 years.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Oct 24, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-442</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Bridge Reinforcement Ph-II</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Structural audit and reinforcement of the East-Wing bypass bridge system.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Nov 12, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    </main>
 </div>
 
 <script>
-    // --- AUTHENTICATION LOGIC ---
     let isLoginMode = true;
 
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
-        document.getElementById('authTitle').innerText = isLoginMode ? "Contractor Login" : "Register Portal";
-        document.getElementById('authSub').innerText = isLoginMode ? "Enter your credentials to access the workspace" : "Create your local administrator account";
-        document.getElementById('authBtn').innerText = isLoginMode ? "Sign In" : "Register & Enter";
-        document.getElementById('modeText').innerText = isLoginMode ? "New to the portal?" : "Already have an account?";
-        document.getElementById('toggleBtn').innerText = isLoginMode ? "Create Account" : "Back to Login";
+        document.getElementById('authTitle').innerText = isLoginMode ? "Contractor Login" : "Register Vendor";
+        document.getElementById('authSub').innerText = isLoginMode ? "Access your project workspace" : "Enroll your company in the tender system";
+        document.getElementById('authBtn').innerText = isLoginMode ? "Sign In" : "Complete Registration";
+        document.getElementById('modeText').innerText = isLoginMode ? "New vendor?" : "Already enrolled?";
+        document.getElementById('toggleBtn').innerText = isLoginMode ? "Create Account" : "Return to Login";
+        document.getElementById('authError').innerText = "";
     }
 
     function handleAuth() {
@@ -200,15 +156,11 @@
 
         if(isLoginMode) {
             const found = users.find(u => u.username === user && u.password === pass);
-            if(found) {
-                loginSuccess(user);
-            } else {
-                error.innerText = "Invalid username or password";
-            }
+            if(found) { loginSuccess(user); } 
+            else { error.innerText = "Invalid credentials"; }
         } else {
-            if(users.some(u => u.username === user)) {
-                error.innerText = "Username already taken";
-            } else {
+            if(users.some(u => u.username === user)) { error.innerText = "Username already taken"; } 
+            else {
                 users.push({username: user, password: pass});
                 localStorage.setItem('portal_users', JSON.stringify(users));
                 loginSuccess(user);
@@ -219,14 +171,8 @@
     function loginSuccess(username) {
         localStorage.setItem('activeSession', username);
         document.getElementById('displayUserName').innerText = username;
-        
-        // Hide Overlay and Show Dashboard
-        const overlay = document.getElementById('authOverlay');
-        const content = document.getElementById('dashboardContent');
-        
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-        content.classList.remove('opacity-0');
-        content.classList.add('opacity-100');
+        document.getElementById('loginSection').classList.add('hidden-state');
+        document.getElementById('dashboardContent').classList.remove('hidden-state');
     }
 
     function handleLogout() {
@@ -234,20 +180,13 @@
         window.location.reload();
     }
 
-    // Check session on load
     window.onload = function() {
         const session = localStorage.getItem('activeSession');
-        if(session) {
-            loginSuccess(session);
-        }
+        if(session) { loginSuccess(session); }
     }
 
-    // --- DASHBOARD UI LOGIC ---
     function toggleAccordion(contentId, iconId) {
-        const wrapper = document.getElementById(contentId);
-        const icon = document.getElementById(iconId);
-        wrapper.classList.toggle('active');
-        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        document.getElementById(contentId).classList.toggle('active');
     }
 </script>
 
