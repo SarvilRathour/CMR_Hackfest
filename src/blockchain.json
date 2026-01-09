@@ -28,7 +28,7 @@
   },
   {
     "index": 2,
-    "timestamp": "2026-01-09T20:25:24.952Z",
+    "timestamp": "2026-01-09T20:33:15.961Z",
     "block_type": "ACKNOWLEDGEMENT",
     "payload": {
       "contractor": "L&T",
@@ -36,6 +36,6 @@
     },
     "previous_hash": "253951ac2aa9f4d963bf76ab9f089de42680b458b83fca59660f03e2270a5fa2",
     "nonce": 0,
-    "hash": "68321928e79499462ef7a0c422fe99a599b769f2aada2d1417ae5203e7839e68"
+    "hash": "e5c3bf3d2890ca792d6b38cf6243bdb463d5a0fea25753bb5f4c0007a08ea561"
   }
 ]
