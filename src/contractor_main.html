@@ -132,6 +132,11 @@
 </div>
 
 <script>
+    // 1. IMMEDIATE SESSION CHECK (Prevents the "Flash" of the login page)
+    if (localStorage.getItem('activeSession')) {
+        window.location.href = "./contractor_dashboard.html";
+    }
+
     let isLoginMode = true;
 
     function toggleAuthMode() {
@@ -169,9 +174,8 @@
 
     function loginSuccess(username) {
         localStorage.setItem('activeSession', username);
-        document.getElementById('displayUserName').innerText = username;
-        document.getElementById('loginSection').classList.add('hidden-state');
-        document.getElementById('dashboardContent').classList.remove('hidden-state');
+        // REDIRECT added here as requested
+        window.location.href = "./contractor_dashboard.html";
     }
 
     function handleLogout() {
@@ -179,9 +183,16 @@
         window.location.reload();
     }
 
+    // Existing functionality for the internal dashboard (if still used)
     window.onload = function() {
         const session = localStorage.getItem('activeSession');
-        if(session) { loginSuccess(session); }
+        if(session) {
+            // This ensures the internal dashboard still works if the redirect fails 
+            // or if you decide to keep the content on one page later.
+            document.getElementById('displayUserName').innerText = session;
+            document.getElementById('loginSection').classList.add('hidden-state');
+            document.getElementById('dashboardContent').classList.remove('hidden-state');
+        }
     }
 
     function toggleAccordion(contentId, iconId) {

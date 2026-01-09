@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const cors = require('cors');
 const path = require("path");
 
 const app = express();
@@ -10,6 +11,7 @@ const CHAIN_FILE = path.join(__dirname, "blockchain.json");
 // Allow frontend to fetch
 app.use(express.json());
 app.use(express.static("public")); // optional
+app.use(cors())
 
 app.get("/blockchain", (req, res) => {
   if (!fs.existsSync(CHAIN_FILE)) {

@@ -25,5 +25,17 @@
     "previous_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c",
     "nonce": 52723,
     "hash": "253951ac2aa9f4d963bf76ab9f089de42680b458b83fca59660f03e2270a5fa2"
+  },
+  {
+    "index": 2,
+    "timestamp": "2026-01-09T20:25:24.952Z",
+    "block_type": "ACKNOWLEDGEMENT",
+    "payload": {
+      "contractor": "L&T",
+      "action": "WORK_STARTED"
+    },
+    "previous_hash": "253951ac2aa9f4d963bf76ab9f089de42680b458b83fca59660f03e2270a5fa2",
+    "nonce": 0,
+    "hash": "68321928e79499462ef7a0c422fe99a599b769f2aada2d1417ae5203e7839e68"
   }
 ]
