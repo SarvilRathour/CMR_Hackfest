@@ -1,0 +1,72 @@
+[
+  {
+    "index": 0,
+    "voter": "champak",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:25:48.536Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 1,
+    "voter": "champak1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:27:50.617Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 2,
+    "voter": "champak12",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:27:53.872Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 3,
+    "voter": "champak124",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:27:56.609Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 4,
+    "voter": "champak1241",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:00.320Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 5,
+    "voter": "champa1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:04.652Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 6,
+    "voter": "chmpa1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:08.027Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 7,
+    "voter": "chpa1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:11.272Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 8,
+    "voter": "chp1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:14.392Z",
+    "verified_block_index": 2
+  },
+  {
+    "index": 9,
+    "voter": "cp1",
+    "vote": "y",
+    "timestamp": "2026-01-09T16:28:17.419Z",
+    "verified_block_index": 2
+  }
+]
