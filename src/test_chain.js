@@ -96,29 +96,51 @@ class Blockchain{
     this.chain.push(block);
     this.saveChain();
   }
-  // mineContractorBlock(contractor){
-  //   if(this.chain.length===0){
-  //     console.log("Genesis block by goverment is yet to be created");
-  //     return;
-  //   }
-  //   const prevBlock=this.getLatestBlock();
-  //   const block=new Block(
-  //     this.chain.length,
-  //     new Date().toISOString(),
-  //     "POW_SUBMISSION",
-  //     {
-  //       contractor,
-  //       message:"Proof of work submission"
-  //     },
-  //     prevBlock.hash
-  //   );
-  //   console.log("Mining Block");
-  //   block.mineBlock();
-  //   this.chain.push(block);
-  //   this.saveChain();
-  //   console.log(`Block mined by ${contractor}`);
-  //   console.log(`Hash: ${block.hash}`);
-  // }
+  addAcknowledgement(contractor){
+    const last=this.chain[this.chain.length-1];
+    if(last.block_type !== "CONTRACTOR_POW"){
+      console.log("acknowledgement is not allowed");
+      return;
+    }
+    if(last.payload.contractor!==contractor){
+      console.log("Only selected contractor can acknowledge");
+      return;
+    }
+    const block=new Block(
+      last.index+1,
+      new Date().toISOString(),
+      "ACKNOWLEDGEMENT",
+      {
+        contractor,
+        action:"WORK_STARTED",
+      },
+      last.hash
+    );
+    this.chain.push(block);
+    this.saveChain();
+  }
+  addPhaseCompletion(contractor,phase){
+    const ackExists=this.chain.some(
+      (b)=>b.block_type==="ACKNOWLEDGEMENT"
+    );
+    if(!ackExists){
+      console.log("Work not acknowedged yet");
+      return;
+    }
+    const block=new Block(
+      this.chain[this.chain.length-1].index+1,
+      new Date().toISOString(),
+      "PHASE_COMPLETED",
+      {
+        contractor,
+        phase,
+        proof:crypto.randomBytes(8).toString("hex"),
+      },
+      this.chain[this.chain.length-1].hash
+    );
+    this.chain.push(block);
+    this.save();
+  }
   printChain(){
     console.log(JSON.stringify(this.chain,null,2));
   }
@@ -231,6 +253,9 @@ program
 program
   .command("print-pow")
   .action(() => powPool.printPool());
-
+program
+  .command("ack")
+  .requiredOption("-c, --contractor <name>")
+  .action((o) => blockchain.addAcknowledgement(o.contractor));
 program.parse(process.argv);
 
