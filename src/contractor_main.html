@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor Portal | Gov-Tenders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .accordion-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion-wrapper.active { grid-template-rows: 1fr; }
+        .accordion-content { overflow: hidden; }
+
+        .glass-input {
+            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
+        }
+
+        .btn-apply {
+            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all active:scale-95 text-sm;
+        }
+
+        .status-badge {
+            @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
+
+        /* Auth Overlay Styles */
+        #authOverlay {
+            backdrop-filter: blur(8px);
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-[#F4F7FE] min-h-screen pb-20">
+
+<div id="authOverlay" class="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-md p-8 md:p-10 rounded-[2.5rem] shadow-2xl animate-slide">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-indigo-200">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h2 id="authTitle" class="text-3xl font-extrabold text-slate-900">Contractor Login</h2>
+            <p id="authSub" class="text-slate-500 mt-2">Enter your credentials to access the workspace</p>
+        </div>
+
+        <div class="space-y-4">
+            <input type="text" id="authUser" placeholder="Official Username" class="glass-input !bg-slate-50">
+            <input type="password" id="authPass" placeholder="Security Password" class="glass-input !bg-slate-50">
+            <button onclick="handleAuth()" id="authBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95">
+                Sign In
+            </button>
+            <p class="text-center text-sm text-slate-500">
+                <span id="modeText">New to the portal?</span> 
+                <button onclick="toggleAuthMode()" id="toggleBtn" class="text-indigo-600 font-bold hover:underline">Create Account</button>
+            </p>
+            <p id="authError" class="text-center text-rose-500 text-xs font-bold h-4"></p>
+        </div>
+    </div>
+</div>
+
+<div id="dashboardContent" class="max-w-5xl mx-auto px-6 pt-12 opacity-0 transition-opacity duration-700">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div class="text-center md:text-left">
+            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Vendor Dashboard</span>
+            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Project Workspace</h1>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden md:block">
+                <p id="displayUserName" class="text-sm font-bold text-slate-800">Contractor Name</p>
+                <p class="text-xs text-slate-400 uppercase tracking-tighter">Verified Official</p>
+            </div>
+            <button onclick="handleLogout()" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="mb-12">
+        <div class="flex items-center gap-2 mb-6">
+            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
+            <h2 class="text-2xl font-bold text-slate-800">Ongoing Contracts</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-8">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
+                        <div>
+                            <span class="status-badge bg-emerald-100 text-emerald-600">Active Phase: 03</span>
+                            <h3 class="text-xl font-bold text-slate-800 mt-2">Smart City Grid Expansion</h3>
+                            <p class="text-sm text-slate-400">Contract ID: #TMT-88210</p>
+                        </div>
+                        <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="text-indigo-600 font-bold text-sm hover:underline flex items-center gap-1">
+                            Add Progress Block 
+                            <svg id="updateIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="w-full bg-slate-100 h-3 rounded-full mb-2">
+                        <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
+                    </div>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">45% Total Completion</p>
+
+                    <div id="updateSection" class="accordion-wrapper">
+                        <div class="accordion-content">
+                            <div class="mt-8 pt-8 border-t border-slate-100">
+                                <h4 class="font-bold text-slate-800 mb-4">Submit New Project Block</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" class="glass-input" placeholder="Block Title (e.g. Sub-structure foundation)">
+                                    <input type="date" class="glass-input">
+                                    <textarea class="glass-input md:col-span-2" rows="2" placeholder="Describe work completed in this block..."></textarea>
+                                    <div class="md:col-span-2 flex justify-end">
+                                        <button onclick="alert('Block submitted for Gov approval!')" class="btn-apply">Submit Block for Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="flex items-center gap-2 mb-6">
+            <div class="w-2 h-6 bg-amber-500 rounded-full"></div>
+            <h2 class="text-2xl font-bold text-slate-800">Open Government Tenders</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
+                    <span class="text-xs font-mono text-slate-400">ID: PRJ-901</span>
+                </div>
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Municipal Solar Park</h3>
+                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Installation of 500kW solar panels across municipal rooftops including maintenance for 5 years.</p>
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="text-xs text-slate-400">
+                        <p>Closing Date:</p>
+                        <p class="font-bold text-slate-600">Oct 24, 2026</p>
+                    </div>
+                    <button class="btn-apply">Apply Now</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
+                    <span class="text-xs font-mono text-slate-400">ID: PRJ-442</span>
+                </div>
+                <h3 class="font-bold text-lg text-slate-800 mb-2">Bridge Reinforcement Ph-II</h3>
+                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Structural audit and reinforcement of the East-Wing bypass bridge system.</p>
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="text-xs text-slate-400">
+                        <p>Closing Date:</p>
+                        <p class="font-bold text-slate-600">Nov 12, 2026</p>
+                    </div>
+                    <button class="btn-apply">Apply Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- AUTHENTICATION LOGIC ---
+    let isLoginMode = true;
+
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authTitle').innerText = isLoginMode ? "Contractor Login" : "Register Portal";
+        document.getElementById('authSub').innerText = isLoginMode ? "Enter your credentials to access the workspace" : "Create your local administrator account";
+        document.getElementById('authBtn').innerText = isLoginMode ? "Sign In" : "Register & Enter";
+        document.getElementById('modeText').innerText = isLoginMode ? "New to the portal?" : "Already have an account?";
+        document.getElementById('toggleBtn').innerText = isLoginMode ? "Create Account" : "Back to Login";
+    }
+
+    function handleAuth() {
+        const user = document.getElementById('authUser').value.trim();
+        const pass = document.getElementById('authPass').value;
+        const error = document.getElementById('authError');
+        
+        if(!user || !pass) { error.innerText = "Please fill all fields"; return; }
+
+        let users = JSON.parse(localStorage.getItem('portal_users') || "[]");
+
+        if(isLoginMode) {
+            const found = users.find(u => u.username === user && u.password === pass);
+            if(found) {
+                loginSuccess(user);
+            } else {
+                error.innerText = "Invalid username or password";
+            }
+        } else {
+            if(users.some(u => u.username === user)) {
+                error.innerText = "Username already taken";
+            } else {
+                users.push({username: user, password: pass});
+                localStorage.setItem('portal_users', JSON.stringify(users));
+                loginSuccess(user);
+            }
+        }
+    }
+
+    function loginSuccess(username) {
+        localStorage.setItem('activeSession', username);
+        document.getElementById('displayUserName').innerText = username;
+        
+        // Hide Overlay and Show Dashboard
+        const overlay = document.getElementById('authOverlay');
+        const content = document.getElementById('dashboardContent');
+        
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        content.classList.remove('opacity-0');
+        content.classList.add('opacity-100');
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('activeSession');
+        window.location.reload();
+    }
+
+    // Check session on load
+    window.onload = function() {
+        const session = localStorage.getItem('activeSession');
+        if(session) {
+            loginSuccess(session);
+        }
+    }
+
+    // --- DASHBOARD UI LOGIC ---
+    function toggleAccordion(contentId, iconId) {
+        const wrapper = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        wrapper.classList.toggle('active');
+        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+</script>
+
+</body>
+</html>

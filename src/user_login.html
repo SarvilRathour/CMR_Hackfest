@@ -2,156 +2,201 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Citizen Login</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Secure Login</title>
   <style>
     :root {
-      --bg-color: #ffffff;
-      --border-color: #f3f4f6;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --accent-blue: #2563eb;
+      --bg-color: #f3f4f6;
+      --accent-color: #2563eb;
+      --text-color: #1f2937;
+      --success-color: #16a34a;
     }
-
     body {
       margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg-color);
-      color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
-
     .login-card {
-      width: 380px;
       background: white;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
       padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 380px;
     }
-
     .login-card h2 {
-      margin: 0 0 1.75rem;
-      font-size: 1.25rem;
-      font-weight: 600;
       text-align: center;
+      color: var(--text-color);
+      margin-top: 0;
     }
-
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-
+    .form-group { margin-bottom: 1rem; }
     label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: #4b5563;
     }
-
     input {
       width: 100%;
-      padding: 0.65rem 0.75rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: var(--accent-blue);
-    }
-
-    button {
-      width: 100%;
-      margin-top: 1rem;
       padding: 0.75rem;
-      background-color: var(--accent-blue);
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; 
+      transition: border-color 0.2s;
+    }
+    input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+    input:disabled { background-color: #f9fafb; cursor: not-allowed; }
+    
+    .btn-primary {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--accent-color);
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover { background-color: #1d4ed8; }
+    
+    .otp-section {
+        display: none; 
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed #e5e7eb;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    button:hover {
-      opacity: 0.95;
-    }
-
-    .message {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      text-align: center;
-    }
-
-    .error {
-      color: #dc2626;
-    }
-
-    .success {
-      color: #16a34a;
-    }
+    .error { color: #dc2626; font-size: 0.875rem; text-align: center; margin-top: 1rem; }
+    .success-msg { color: var(--success-color); font-size: 0.875rem; text-align: center; margin-bottom: 0.5rem; }
   </style>
 </head>
-
 <body>
 
   <div class="login-card">
-    <h2>Citizen Login</h2>
+    <h2>Secure Citizen Login</h2>
+    
+    <div id="step-1">
+        <div class="form-group">
+            <label>Home Address</label>
+            <input type="text" id="address" placeholder="e.g. Chandni Chowk, Delhi">
+        </div>
 
-    <div class="form-group">
-      <label for="address">Address</label>
-      <input type="text" id="address" placeholder="Enter your address">
+        <div class="form-group">
+            <label>Aadhaar / VID Number</label>
+            <input 
+                type="text" 
+                id="aadhaar" 
+                placeholder="0000 0000 0000 0000" 
+                maxlength="19" 
+                oninput="formatAadhaar(this)"
+            >
+        </div>
+        <button class="btn-primary" onclick="sendOTP()">Verify & Send OTP</button>
     </div>
 
-    <div class="form-group">
-      <label for="aadhaar">Aadhaar Number</label>
-      <input type="text" id="aadhaar" placeholder="Enter Aadhaar number">
+    <div id="otp-area" class="otp-section">
+        <div id="otp-sent-msg" class="success-msg"></div>
+        <div class="form-group">
+            <label>Enter OTP</label>
+            <input type="text" id="otp-input" placeholder="Enter 4-digit OTP" maxlength="4">
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Login Securely</button>
     </div>
 
-    <button onclick="loginUser()">Proceed</button>
-
-    <div id="message" class="message"></div>
+    <div id="error-msg" class="error"></div>
   </div>
 
   <script>
-    function loginUser() {
-      const address = document.getElementById("address").value.trim();
-      const aadhaar = document.getElementById("aadhaar").value.trim();
-      const message = document.getElementById("message");
+    // --- 1. Hashing Function (Privacy Protection) ---
+    function simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash |= 0; 
+        }
+        return "usr_" + Math.abs(hash);
+    }
 
-      if (!address || !aadhaar) {
-        message.textContent = "Both fields are required.";
-        message.className = "message error";
-        return;
-      }
+    // --- 2. Formatter (Handle 16 Digits) ---
+    function formatAadhaar(input) {
+        // Remove spaces
+        let value = input.value.replace(/\D/g, '');
+        
+        // Add space after every 4th digit
+        let formattedValue = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) formattedValue += ' ';
+            formattedValue += value[i];
+        }
+        input.value = formattedValue;
+    }
 
-      // Unique session key (one-time per session)
-      const userKey = address.toLowerCase() + "_" + aadhaar;
+    // --- 3. Login Logic ---
+    let generatedOTP = null;
 
-      // Check if already logged in during this session
-      if (sessionStorage.getItem(userKey)) {
-        message.textContent =
-          "You have already logged in during this session.";
-        message.className = "message error";
-        return;
-      }
+    function sendOTP() {
+        const address = document.getElementById('address').value.trim();
+        const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, ''); // Remove spaces
+        const errorMsg = document.getElementById('error-msg');
+        
+        errorMsg.textContent = "";
 
-      // Store login session
-      sessionStorage.setItem(userKey, "logged");
+        // VALIDATION UPDATE: Check for 16 Digits
+        if (!address || aadhaarRaw.length !== 16) {
+            errorMsg.textContent = "Please enter a valid Address and 16-digit ID.";
+            return;
+        }
 
-      message.textContent = "Login successful. You may proceed.";
-      message.className = "message success";
+        // Simulate OTP
+        generatedOTP = Math.floor(1000 + Math.random() * 9000); 
+        
+        alert(`[SIMULATION] Your OTP is: ${generatedOTP}`);
+        
+        document.getElementById('otp-sent-msg').textContent = `OTP sent to mobile linked with ID ending in ****${aadhaarRaw.slice(-4)}`;
+        document.getElementById('otp-area').style.display = 'block';
+        
+        // Lock inputs
+        document.getElementById('aadhaar').disabled = true;
+        document.getElementById('address').disabled = true;
+    }
 
-      setTimeout(() => {
-        window.location.href = "user-dashboard.html";
-      }, 1500);
+    function handleLogin() {
+        const userOTP = document.getElementById('otp-input').value.trim();
+        const errorMsg = document.getElementById('error-msg');
+        const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, '');
+        const address = document.getElementById('address').value.trim();
+
+        if (parseInt(userOTP) !== generatedOTP) {
+            errorMsg.textContent = "Invalid OTP. Please try again.";
+            return;
+        }
+
+        // Store Hashed ID for privacy
+        const userHash = simpleHash(aadhaarRaw);
+
+        sessionStorage.setItem('active_user_hash', userHash);
+        sessionStorage.setItem('active_address', address);
+        
+        // Store display version (Masked)
+        sessionStorage.setItem('display_aadhaar', "XXXX-XXXX-XXXX-" + aadhaarRaw.slice(-4));
+
+        window.location.href = 'user-dashboard.html';
     }
   </script>
-
 </body>
 </html>
-

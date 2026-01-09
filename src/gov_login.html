@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Government Official Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Govt Official Access | Gov-Tenders</title>
 
   <style>
     :root {
       --bg-color: #ffffff;
-      --border-color: #f3f4f6;
+      --border-color: #e5e7eb;
       --text-main: #111827;
       --text-muted: #6b7280;
       --accent-blue: #2563eb;
+      --accent-hover: #1d4ed8;
     }
 
     body {
@@ -22,111 +24,144 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      background: radial-gradient(circle at top right, #f9fafb, #ffffff);
     }
 
     .login-card {
-      width: 360px;
+      width: 100%;
+      max-width: 400px;
       background: white;
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 2.5rem;
-    }
-
-    .login-card h2 {
-      margin: 0 0 1.5rem;
-      font-size: 1.25rem;
-      font-weight: 600;
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
       text-align: center;
     }
 
+    .login-card h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      text-align: left;
     }
 
     label {
       display: block;
       font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
     }
 
     input {
       width: 100%;
-      padding: 0.65rem 0.75rem;
+      padding: 0.8rem 1rem;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
       outline: none;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
     }
 
     input:focus {
       border-color: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
     button {
       width: 100%;
-      margin-top: 1rem;
-      padding: 0.7rem;
+      margin-top: 1.5rem;
+      padding: 0.8rem;
       background-color: var(--accent-blue);
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 8px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      transition: background-color 0.2s;
     }
 
     button:hover {
-      opacity: 0.95;
+      background-color: var(--accent-hover);
     }
 
     .error {
-      margin-top: 0.75rem;
+      margin-top: 1rem;
       font-size: 0.85rem;
-      color: red;
-      text-align: center;
+      color: #dc2626;
+      min-height: 1.25rem;
+    }
+
+    .back-home {
+      display: inline-block;
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .back-home:hover {
+      color: var(--accent-blue);
     }
   </style>
 </head>
-
 <body>
 
   <div class="login-card">
-    <h2>Government Official Login</h2>
+    <h2>Govt Official Login</h2>
+    <p class="subtitle">Secure administration access</p>
 
     <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter username">
+      <label for="govt_official_id">Government Official ID</label>
+      <input type="text" id="govt_official_id" placeholder="Enter Official ID">
     </div>
 
     <div class="form-group">
       <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter password">
+      <input type="password" id="password" placeholder="Enter provided password">
     </div>
 
     <button onclick="login()">Sign In</button>
 
     <div id="error" class="error"></div>
+    
+    <a href="../index.html" class="back-home">← Return to Homepage</a>
   </div>
 
   <script>
     function login() {
-      const correctUsername = "admin";
-      const correctPassword = "gov@123";
+      // Hardcoded credentials
+      const correctID = "delhi_cm@gov.in";
+      const correctPassword = "Delhi!@#2026";
 
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+      const userId = document.getElementById("govt_official_id").value;
+      const pass = document.getElementById("password").value;
+      const errorDiv = document.getElementById("error");
 
-      if (username === correctUsername && password === correctPassword) {
-        window.location.href = "dashboard.html";
+      // Check if the ID exists and if the password matches
+      if (validCredentials[userId] && validCredentials[userId] === pass) {
+        // Redirection to the specific requested page
+        window.location.href = "./gov_issue_tender.html";
       } else {
-        document.getElementById("error").innerText =
-          "Invalid credentials. Access denied.";
+        errorDiv.innerText = "Incorrect credentials.";
+        document.getElementById("password").value = "";
       }
     }
   </script>
 
 </body>
 </html>
-

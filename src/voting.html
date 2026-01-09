@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Voting | GovChain</title>
+    <style>
+        :root {
+            /* Theme Colors - Professional Govt Look */
+            --primary: #111827;      /* Dark Gray/Black */
+            --accent: #2563eb;       /* Trust Blue */
+            --success: #16a34a;      /* Green */
+            --danger: #dc2626;       /* Red */
+            --bg-color: #f3f4f6;     /* Light Gray Background */
+            --card-bg: #ffffff;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        /* Card Container */
+        .container {
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Elements */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1.2rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Ensures padding doesn't break width */
+            transition: border 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: #000; }
+
+        .btn-yes { background-color: var(--success); color: white; margin-bottom: 10px; }
+        .btn-no { background-color: var(--danger); color: white; }
+
+        /* Project Info Box */
+        .project-details {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Success State */
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hash-box {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin-top: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GOV-CHAIN VOTING PORTAL</h1>
+    </header>
+
+    <div class="container">
+
+        <div id="authSection" class="card">
+            <h2>Citizen Identity</h2>
+            <p class="subtitle">Please verify your identity using Aadhaar to access local project voting.</p>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                
+                <label for="aadhaar">Aadhaar Number</label>
+                <input type="text" 
+                       id="aadhaar" 
+                       placeholder="0000 0000 0000" 
+                       maxlength="14" 
+                       inputmode="numeric"
+                       required
+                       oninput="formatAadhaar(this)">
+
+                <label for="pincode">Area Pin Code</label>
+                <input type="text" 
+                       id="pincode" 
+                       placeholder="e.g. 500003" 
+                       maxlength="6"
+                       inputmode="numeric"
+                       required
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
+                <button type="submit" class="btn btn-primary">Verify & Proceed</button>
+            </form>
+        </div>
+
+        <div id="votingSection" class="card hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2>Verify Work</h2>
+                <span style="background:#dbeafe; color:#1e40af; padding:4px 8px; border-radius:12px; font-size:0.8rem; font-weight:bold;">Verified</span>
+            </div>
+            
+            <p class="subtitle">Does the evidence match the actual site condition?</p>
+
+            <div class="project-details">
+                <div class="detail-row">
+                    <strong style="color:var(--text-muted)">Project:</strong>
+                    <span>Road Repair - Sector 4</span>
+                </div>
+                <div class="detail-row">
+                    <strong style="color:var(--text-muted)">Contractor:</strong>
+                    <span>BuildWell Infra Ltd.</span>
+                </div>
+                <div class="detail-row">
+                    <strong style="color:var(--text-muted)">Evidence:</strong>
+                    <a href="#" style="color:var(--accent); text-decoration:none;">View Site Photos (4)</a>
+                </div>
+            </div>
+
+            <button class="btn btn-yes" onclick="castVote('YES')">✅ Yes, Work Completed</button>
+            <button class="btn btn-no" onclick="castVote('NO')">❌ No, Work Incomplete</button>
+        </div>
+
+        <div id="successSection" class="card hidden" style="text-align: center;">
+            <div class="success-icon">🗳️</div>
+            <h2>Vote Recorded</h2>
+            <p class="subtitle">Your consensus has been added to the blockchain ledger.</p>
+            
+            <div class="hash-box">
+                Block Hash: 0x71C...9A2F4
+            </div>
+
+            <button class="btn btn-primary" onclick="location.reload()" style="margin-top:20px;">Return to Home</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. Aadhaar Formatting Logic ---
+        function formatAadhaar(input) {
+            // Remove any character that is NOT a digit
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limit to 12 digits (raw)
+            if (value.length > 12) value = value.slice(0, 12);
+            
+            // Add a space after every 4 digits
+            // The regex matches groups of 1 to 4 chars
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            
+            // Update the input field
+            input.value = formattedValue;
+        }
+
+        // --- 2. Login Handling ---
+        function handleLogin(e) {
+            e.preventDefault(); // Stop page refresh
+
+            // Get values
+            const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, ''); // Remove spaces for checking
+            const pin = document.getElementById('pincode').value;
+
+            // Simple Validation
+            if (aadhaarRaw.length === 12 && pin.length === 6) {
+                // Success: Switch Cards
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('votingSection').classList.remove('hidden');
+            } else {
+                alert("Please enter a valid 12-digit Aadhaar and 6-digit Pin Code.");
+            }
+        }
+
+        // --- 3. Voting Handling ---
+        function castVote(voteType) {
+            console.log(`User voted: ${voteType}`);
+            
+            // In a real app, this sends data to the Smart Contract
+            
+            // Switch to Success Card
+            document.getElementById('votingSection').classList.add('hidden');
+            document.getElementById('successSection').classList.remove('hidden');
+        }
+    </script>
+
+</body>
+</html>
