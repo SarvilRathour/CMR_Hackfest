@@ -4,160 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Citizen Dashboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #1f2937;
-    }
-
-    .dash-container {
-      width: 100%;
-      max-width: 900px;
-      margin: 20px;
-      display: grid;
-      gap: 20px;
-    }
-
-    /* --- HEADER CARD --- */
-    .header-card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="blockchain_engine.js"></script> <style>
+    /* ... (Keep your existing styles from the uploaded file) ... */
+    /* Add this for dynamic cards */
+    .dynamic-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+    .dynamic-card h4 { margin: 0 0 10px 0; color: #1e3a8a; }
+    .badge { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
     
-    .user-badge {
-      background: #eff6ff;
-      color: #1e40af;
-      padding: 0.5rem 1rem;
-      border-radius: 99px;
-      font-size: 0.9rem;
-      border: 1px solid #dbeafe;
-    }
-
-    .logout-btn {
-      color: #dc2626;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    /* --- SELECTION MENU --- */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .menu-card {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-    
-    .menu-card:hover {
-      border-color: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .menu-card h3 { margin: 0 0 10px 0; color: #111827; }
-    .menu-card p { margin: 0; color: #6b7280; font-size: 0.9rem; }
-
-    /* --- VOTING SECTIONS (Hidden by default) --- */
-    .voting-section {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      display: none; /* Hidden initially */
-      animation: fadeIn 0.3s ease;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 1rem;
-    }
-    .back-btn {
-      background: #f3f4f6;
-      border: none;
-      padding: 5px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    /* Project Items */
-    .project-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .project-meta {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-    
-    .action-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    button.vote-btn {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-    button.vote-btn:hover { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
-
-    button.approve-btn { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
-    button.approve-btn:hover { background: #d1fae5; }
-
-    button.reject-btn { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-    button.reject-btn:hover { background: #fee2e2; }
-
-    /* Success State */
-    .voted-badge {
-      display: none;
-      background: #f0fdf4;
-      color: #15803d;
-      padding: 1rem;
-      border-radius: 6px;
-      text-align: center;
-      border: 1px dashed #16a34a;
-      font-weight: 600;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* Re-using your styles */
+    body { font-family: 'Inter', system-ui; background: #f3f4f6; display: flex; justify-content: center; padding: 20px; }
+    .dash-container { width: 100%; max-width: 900px; display: grid; gap: 20px; }
+    .header-card { background: white; padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .menu-card { background: white; padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; }
+    .menu-card:hover { border-color: #2563eb; }
+    .voting-section { background: white; padding: 2rem; border-radius: 12px; display: none; }
+    .vote-btn { width: 100%; padding: 10px; margin-top: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .vote-btn:hover { background: #1d4ed8; }
   </style>
 </head>
 <body>
@@ -167,149 +31,103 @@
     <div class="header-card">
       <div>
         <h2 style="margin:0;">Citizen Dashboard</h2>
-        <div class="user-badge" style="margin-top:5px;">
-          ID: <span id="display-aadhaar">...</span>
-        </div>
+        <small>ID Hash: <span id="user-hash-display">Loading...</span></small>
       </div>
-      <a onclick="logout()" class="logout-btn">Sign Out</a>
+      <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer;">Sign Out</button>
     </div>
 
     <div id="main-menu" class="menu-grid">
-      <div class="menu-card" onclick="openSection('contractor-view')">
-        <h3 style="color:#2563eb;">🗳️ Vote for Contractor</h3>
-        <p>Select the best contractor for upcoming government tenders.</p>
+      <div class="menu-card" onclick="loadTendersView()">
+        <h3>🗳️ View Active Tenders</h3>
+        <p>Vote for contractors on live government tenders.</p>
       </div>
-
-      <div class="menu-card" onclick="openSection('phase-view')">
-        <h3 style="color:#059669;">✅ Verify Phase Completion</h3>
-        <p>Confirm if current project phases are completed satisfactorily.</p>
-      </div>
-    </div>
-
-    <div id="contractor-view" class="voting-section">
-      <div class="section-header">
-        <h3>Ongoing Tenders</h3>
-        <button class="back-btn" onclick="goBack()">Back to Menu</button>
-      </div>
-
-      <div class="project-item" id="tender-card-1">
-        <h4>Highway Expansion (NH-44)</h4>
-        <div class="project-meta">
-          <span>Budget: ₹50 Cr</span>
-          <span>Location: Delhi North</span>
-        </div>
-        
-        <div id="tender-actions-1" class="action-row">
-          <button class="vote-btn" onclick="castVote('tender', 'NH-44', 'InfraCorp Ltd')">
-            Vote: InfraCorp Ltd
-          </button>
-          <button class="vote-btn" onclick="castVote('tender', 'NH-44', 'BuildWell Pvt')">
-            Vote: BuildWell Pvt
-          </button>
-        </div>
-        <div id="tender-msg-1" class="voted-badge"></div>
+      <div class="menu-card" onclick="alert('Audit Feature Coming Soon')">
+        <h3>✅ Audit Projects</h3>
+        <p>Verify completion of ongoing works.</p>
       </div>
     </div>
 
-    <div id="phase-view" class="voting-section">
-      <div class="section-header">
-        <h3>Project Audits</h3>
-        <button class="back-btn" onclick="goBack()">Back to Menu</button>
+    <div id="tender-section" class="voting-section">
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <h3>Active Government Tenders</h3>
+        <button onclick="showMenu()" style="padding:5px 10px;">Back</button>
       </div>
-
-      <div class="project-item" id="audit-card-1">
-        <h4>City Hospital Wing A - Foundation Phase</h4>
-        <p style="color:#4b5563; font-size:0.9rem; margin-bottom:1rem;">
-          The contractor claims the foundation laying is 100% complete. Please verify.
-        </p>
-        
-        <div id="audit-actions-1" class="action-row">
-          <button class="vote-btn approve-btn" onclick="castVote('audit', 'Hospital-WingA', 'Satisfied')">
-            Mark Satisfactory
-          </button>
-          <button class="vote-btn reject-btn" onclick="castVote('audit', 'Hospital-WingA', 'Unsatisfactory')">
-            Report Issue
-          </button>
-        </div>
-        <div id="audit-msg-1" class="voted-badge"></div>
-      </div>
+      
+      <div id="tender-list-container"></div>
     </div>
 
   </div>
 
   <script>
-    // --- 1. AUTH CHECK ---
-    const userHash = sessionStorage.getItem('active_user_hash'); 
-    const displayAadhaar = sessionStorage.getItem('display_aadhaar');
-
+    // 1. Auth Check
+    const userHash = sessionStorage.getItem('active_user_hash');
     if (!userHash) window.location.href = 'user_login.html';
-    document.getElementById('display-aadhaar').textContent = displayAadhaar;
+    document.getElementById('user-hash-display').textContent = userHash.substring(0, 10) + "...";
 
-    // --- 2. NAVIGATION ---
-    function openSection(id) {
-      // Hide Menu
-      document.getElementById('main-menu').style.display = 'none';
-      // Show Selected Section
-      document.getElementById(id).style.display = 'block';
-      // Check for previous votes in this specific section
-      checkPreviousVotes();
+    // 2. Navigation
+    function showMenu() {
+        document.getElementById('tender-section').style.display = 'none';
+        document.getElementById('main-menu').style.display = 'grid';
     }
 
-    function goBack() {
-      document.querySelectorAll('.voting-section').forEach(el => el.style.display = 'none');
-      document.getElementById('main-menu').style.display = 'grid';
-    }
-
-    // --- 3. VOTING LOGIC ---
-    function castVote(type, projectId, choice) {
-      const confirmMsg = type === 'tender' 
-        ? `Vote for ${choice} on project ${projectId}?`
-        : `Mark phase as ${choice} for ${projectId}?`;
-
-      if(confirm(confirmMsg)) {
-        // Create unique key for this specific vote
-        // Format: vote_[TYPE]_[PROJECT_ID]_[USER_HASH]
-        const storageKey = `vote_${type}_${projectId}_${userHash}`;
+    // 3. LOAD DATA FROM BLOCKCHAIN
+    function loadTendersView() {
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('tender-section').style.display = 'block';
         
-        localStorage.setItem(storageKey, choice);
-        
-        // Refresh UI
-        checkPreviousVotes();
-      }
+        const container = document.getElementById('tender-list-container');
+        container.innerHTML = "<p>Scanning Blockchain Ledger...</p>";
+
+        // Fetch Tenders using our Engine
+        const tenders = GovChain.getAllTenders();
+
+        if (tenders.length === 0) {
+            container.innerHTML = "<p>No active tenders found on-chain.</p>";
+            return;
+        }
+
+        let html = "";
+        tenders.forEach(tender => {
+            html += `
+                <div class="dynamic-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <h4>${tender.title}</h4>
+                        <span class="badge">${tender.jurisdiction}</span>
+                    </div>
+                    <p style="color:#666; font-size:0.9rem;">${tender.scope}</p>
+                    <p><strong>Budget:</strong> ₹${tender.budget} Cr</p>
+                    
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="vote-btn" onclick="voteOnChain('${tender.id}', 'InfraCorp')">Vote: InfraCorp</button>
+                        <button class="vote-btn" onclick="voteOnChain('${tender.id}', 'BuildWell')">Vote: BuildWell</button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
     }
 
-    // --- 4. CHECK STATUS ---
-    function checkPreviousVotes() {
-      // We check specific hardcoded projects for this demo
-      
-      // Check Tender 1 (NH-44)
-      const tenderKey = `vote_tender_NH-44_${userHash}`;
-      const tenderVote = localStorage.getItem(tenderKey);
-      if (tenderVote) {
-        document.getElementById('tender-actions-1').style.display = 'none';
-        const badge = document.getElementById('tender-msg-1');
-        badge.style.display = 'block';
-        badge.textContent = `You voted for: ${tenderVote}`;
-      }
+    // 4. VOTE ON CHAIN
+    function voteOnChain(tenderId, choice) {
+        if(confirm(`Confirm vote for ${choice} on Tender ${tenderId}?`)) {
+            
+            const voteData = {
+                voterHash: userHash,
+                tenderId: tenderId,
+                choice: choice,
+                timestamp: new Date().toISOString()
+            };
 
-      // Check Audit 1 (Hospital-WingA)
-      const auditKey = `vote_audit_Hospital-WingA_${userHash}`;
-      const auditVote = localStorage.getItem(auditKey);
-      if (auditVote) {
-        document.getElementById('audit-actions-1').style.display = 'none';
-        const badge = document.getElementById('audit-msg-1');
-        badge.style.display = 'block';
-        badge.textContent = `You marked this phase: ${auditVote}`;
-        // Color coding for audit result
-        badge.style.color = auditVote === 'Satisfied' ? '#15803d' : '#b91c1c';
-        badge.style.borderColor = auditVote === 'Satisfied' ? '#16a34a' : '#ef4444';
-        badge.style.background = auditVote === 'Satisfied' ? '#f0fdf4' : '#fef2f2';
-      }
+            // UPLOAD VOTE TO BLOCKCHAIN
+            const block = GovChain.addData('VOTE', voteData);
+
+            alert(`Vote Mined Successfully!\nBlock Hash: ${block.hash}`);
+        }
     }
 
     function logout() {
-      sessionStorage.clear();
-      window.location.href = 'user_login.html';
+        sessionStorage.clear();
+        window.location.href = 'user_login.html';
     }
   </script>
 </body>
