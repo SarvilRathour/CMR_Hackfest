@@ -66,15 +66,9 @@
       margin-top: 0.5rem;
     }
     .btn-primary:hover { background-color: #1d4ed8; }
-    .btn-secondary {
-        background-color: white;
-        color: var(--accent-color);
-        border: 1px solid var(--accent-color);
-        margin-top: 0;
-    }
     
     .otp-section {
-        display: none; /* Hidden by default */
+        display: none; 
         margin-top: 1.5rem;
         padding-top: 1.5rem;
         border-top: 1px dashed #e5e7eb;
@@ -102,12 +96,12 @@
         </div>
 
         <div class="form-group">
-            <label>Aadhaar Number</label>
+            <label>Aadhaar / VID Number</label>
             <input 
                 type="text" 
                 id="aadhaar" 
-                placeholder="0000 0000 0000" 
-                maxlength="14" 
+                placeholder="0000 0000 0000 0000" 
+                maxlength="19" 
                 oninput="formatAadhaar(this)"
             >
         </div>
@@ -127,24 +121,23 @@
   </div>
 
   <script>
-    // --- UTILITIES ---
-    
-    // 1. Simple Hash Function (Obfuscation)
-    // This turns "1234..." into a random-looking string "x8s7..."
-    // Note: This is NOT crypto-secure, but good for prototypes.
+    // --- 1. Hashing Function (Privacy Protection) ---
     function simpleHash(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
             hash = (hash << 5) - hash + char;
-            hash |= 0; // Convert to 32bit integer
+            hash |= 0; 
         }
         return "usr_" + Math.abs(hash);
     }
 
-    // 2. Aadhaar Formatter
+    // --- 2. Formatter (Handle 16 Digits) ---
     function formatAadhaar(input) {
+        // Remove spaces
         let value = input.value.replace(/\D/g, '');
+        
+        // Add space after every 4th digit
         let formattedValue = '';
         for (let i = 0; i < value.length; i++) {
             if (i > 0 && i % 4 === 0) formattedValue += ' ';
@@ -153,35 +146,31 @@
         input.value = formattedValue;
     }
 
-    // --- LOGIC ---
-
+    // --- 3. Login Logic ---
     let generatedOTP = null;
 
     function sendOTP() {
         const address = document.getElementById('address').value.trim();
-        const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, '');
+        const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, ''); // Remove spaces
         const errorMsg = document.getElementById('error-msg');
         
         errorMsg.textContent = "";
 
-        // Validation
-        if (!address || aadhaarRaw.length !== 12) {
-            errorMsg.textContent = "Please enter a valid Address and 12-digit Aadhaar.";
+        // VALIDATION UPDATE: Check for 16 Digits
+        if (!address || aadhaarRaw.length !== 16) {
+            errorMsg.textContent = "Please enter a valid Address and 16-digit ID.";
             return;
         }
 
-        // Simulate Sending OTP
-        // In a real app, this connects to a backend SMS service.
-        // Here, we just alert it for the prototype.
-        generatedOTP = Math.floor(1000 + Math.random() * 9000); // Random 4 digits
+        // Simulate OTP
+        generatedOTP = Math.floor(1000 + Math.random() * 9000); 
         
         alert(`[SIMULATION] Your OTP is: ${generatedOTP}`);
         
-        // UI Updates
-        document.getElementById('otp-sent-msg').textContent = `OTP sent to mobile linked with Aadhaar ending in ****${aadhaarRaw.slice(-4)}`;
+        document.getElementById('otp-sent-msg').textContent = `OTP sent to mobile linked with ID ending in ****${aadhaarRaw.slice(-4)}`;
         document.getElementById('otp-area').style.display = 'block';
         
-        // Disable inputs so they can't change details after OTP is sent
+        // Lock inputs
         document.getElementById('aadhaar').disabled = true;
         document.getElementById('address').disabled = true;
     }
@@ -192,24 +181,19 @@
         const aadhaarRaw = document.getElementById('aadhaar').value.replace(/\s/g, '');
         const address = document.getElementById('address').value.trim();
 
-        // Check OTP
         if (parseInt(userOTP) !== generatedOTP) {
             errorMsg.textContent = "Invalid OTP. Please try again.";
             return;
         }
 
-        // --- SECURITY UPGRADE: HASHING ---
-        // Instead of storing raw Aadhaar, we store a Hash.
-        // This protects privacy if someone looks at localStorage.
+        // Store Hashed ID for privacy
         const userHash = simpleHash(aadhaarRaw);
 
-        // Session Uniqueness
         sessionStorage.setItem('active_user_hash', userHash);
         sessionStorage.setItem('active_address', address);
         
-        // Also store the raw aadhaar temporarily ONLY for display in dashboard 
-        // (In real apps, we would fetch profile from DB instead)
-        sessionStorage.setItem('display_aadhaar', "XXXX-XXXX-" + aadhaarRaw.slice(-4));
+        // Store display version (Masked)
+        sessionStorage.setItem('display_aadhaar', "XXXX-XXXX-XXXX-" + aadhaarRaw.slice(-4));
 
         window.location.href = 'user-dashboard.html';
     }
