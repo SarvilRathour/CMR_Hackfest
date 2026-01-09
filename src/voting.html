@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Voting | CMR Hackfest</title>
+    <style>
+        :root {
+            --primary: #111827; /* Dark Govt Theme */
+            --accent: #2563eb;  /* Trust Blue */
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f3f4f6;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        .hidden { display: none; }
+        
+        h2 { margin-top: 0; color: var(--primary); }
+        .label { font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem; display: block; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 1rem; box-sizing: border-box; }
+        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        
+        .btn { width: 100%; padding: 0.8rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-yes { background: var(--success); color: white; margin-bottom: 10px; }
+        .btn-no { background: var(--danger); color: white; }
+        
+        .project-info { background: #f9fafb; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; border: 1px solid #e5e7eb; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 99px; background: #dbeafe; color: var(--accent); font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="authStep" class="card">
+        <h2>🇮🇳 Citizen Identity</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Verify identity to vote on local projects.</p>
+        
+        <label class="label">Aadhaar Number</label>
+        <input type="text" id="aadhaar" placeholder="XXXX XXXX XXXX" maxlength="12">
+        
+        <label class="label">Pin Code (Address Match)</label>
+        <input type="text" id="pincode" placeholder="e.g. 500003" maxlength="6">
+
+        <button onclick="verifyUser()" class="btn btn-primary">Verify Identity</button>
+    </div>
+
+    <div id="voteStep" class="card hidden">
+        <span class="tag">VERIFIED CITIZEN</span>
+        <h2>Verify Road Work</h2>
+        
+        <div class="project-info">
+            <strong>Project:</strong> Rd-Repair-Block-4<br>
+            <strong>Contractor:</strong> BuildWell Infra<br>
+            <strong>Status:</strong> Pending Approval<br>
+            <a href="#" style="color:var(--accent); font-size:0.9rem;">View Site Photos ></a>
+        </div>
+
+        <button onclick="castVote('YES')" class="btn btn-yes">✅ Yes, Work is Complete</button>
+        <button onclick="castVote('NO')" class="btn btn-no">❌ No, Work is Incomplete</button>
+    </div>
+
+    <div id="successStep" class="card hidden" style="text-align: center;">
+        <div style="font-size: 3rem;">🗳️</div>
+        <h2>Vote on Chain</h2>
+        <p>Your consensus has been recorded on the blockchain.</p>
+        <p style="font-size: 0.8rem; color: #6b7280;">TxHash: 0x71C...9A2</p>
+    </div>
+
+    <script>
+        function verifyUser() {
+            const aadhaar = document.getElementById('aadhaar').value;
+            const pin = document.getElementById('pincode').value;
+            
+            // Simulation Logic: Check if fields are filled
+            if(aadhaar.length === 12 && pin.length === 6) {
+                document.getElementById('authStep').classList.add('hidden');
+                document.getElementById('voteStep').classList.remove('hidden');
+            } else {
+                alert("Enter valid 12-digit Aadhaar and 6-digit Pin Code");
+            }
+        }
+
+        function castVote(vote) {
+            // Here you would call your Smart Contract
+            console.log("Voted:", vote);
+            document.getElementById('voteStep').classList.add('hidden');
+            document.getElementById('successStep').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
