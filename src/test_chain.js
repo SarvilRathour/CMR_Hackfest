@@ -119,32 +119,92 @@ class Blockchain{
     this.chain.push(block);
     this.saveChain();
   }
-  addPhaseCompletion(contractor,phase){
-    const ackExists=this.chain.some(
-      (b)=>b.block_type==="ACKNOWLEDGEMENT"
-    );
-    if(!ackExists){
-      console.log("Work not acknowedged yet");
-      return;
-    }
-    const block=new Block(
-      this.chain[this.chain.length-1].index+1,
+  addPhaseCompletion(contractor, phase) {
+    const last = this.getLatestBlock();
+    const block = new Block(
+      last.index + 1,
       new Date().toISOString(),
       "PHASE_COMPLETED",
       {
         contractor,
         phase,
-        proof:crypto.randomBytes(8).toString("hex"),
+        proof: crypto.randomBytes(8).toString("hex"),
       },
-      this.chain[this.chain.length-1].hash
+      last.hash
     );
     this.chain.push(block);
     this.saveChain();
+    this.saveChain(); // Corrected method name
+    console.log(`Phase block added. Hash: ${block.hash}`);
   }
+
+  // addPhaseCompletion(contractor,phase){
+  //   const ackExists=this.chain.some(
+  //     (b)=>b.block_type==="ACKNOWLEDGEMENT"
+  //   );
+  //   if(!ackExists){
+  //     console.log("Work not acknowedged yet");
+  //     return;
+  //   }
+  //   const block=new Block(
+  //     this.chain[this.chain.length-1].index+1,
+  //     new Date().toISOString(),
+  //     "PHASE_COMPLETED",
+  //     {
+  //       contractor,
+  //       phase,
+  //       proof:crypto.randomBytes(8).toString("hex"),
+  //     },
+  //     this.chain[this.chain.length-1].hash
+  //   );
+  //   this.chain.push(block);
+  //   this.save();
+  // }
   printChain(){
     console.log(JSON.stringify(this.chain,null,2));
   }
+
+  finalizeValidatedBlock(contractorBlockHash, votes) {
+    const block = this.chain.find(b => b.hash === contractorBlockHash);
+    if (!block) return;
+
+    const yes = votes.filter(v => v.vote === 'y').length;
+
+    block.validation = {
+      status: "VALIDATED",
+      yes_votes: yes,
+      total_votes: votes.length,
+      validated_at: new Date().toISOString()
+    };
+
+    this.saveChain();
+    console.log(`Block ${block.index} officially validated by 10 users.`);
+  }
+
+  // under validation (not ) 
+//   finalizeValidatedBlock(contractorBlockHash, votes) {
+//   const block = this.chain.find(b => b.hash === contractorBlockHash);
+//   if (!block) {
+//     console.log("Block not found in chain.");
+//     return;
+//   }
+
+//   const yes = votes.filter(v => v.vote === 'y').length;
+//   const no  = votes.filter(v => v.vote === 'n').length;
+
+//   block.validation = {
+//     status: yes > no ? "VALID" : "INVALID",
+//     yes,
+//     no,
+//     total: votes.length,
+//     validated_at: new Date().toISOString()
+//   };
+
+//   this.saveChain();
+//   console.log(`Block marked as ${block.validation.status}`);
+// }
 }
+
 // PoWSubmission {
 //   contractor,
 //   timestamp,
@@ -199,6 +259,37 @@ class PoWPool{
     console.log(JSON.stringify(this.pool, null, 2));
   }
 }
+
+// class added by ssd-81
+// New Class to manage block-specific voting
+class VoteManager {
+  static getVoteFile(blockHash) {
+    return `votes_${blockHash}.json`;
+  }
+
+  static saveVote(blockToVerify, voter, voteValue) {
+  const fileName = this.getVoteFile(blockToVerify.hash);
+  let votes = [];
+
+  if (fs.existsSync(fileName)) {
+    votes = JSON.parse(fs.readFileSync(fileName));
+  }
+
+  const voteEntry = {
+    index: votes.length,
+    voter,
+    vote: voteValue,
+    timestamp: new Date().toISOString(),
+    verified_block_index: blockToVerify.index
+  };
+
+  votes.push(voteEntry);
+  fs.writeFileSync(fileName, JSON.stringify(votes, null, 2));
+  return votes;
+}
+}
+
+
 const blockchain=new Blockchain();
 const powPool = new PoWPool();
 
@@ -264,3 +355,39 @@ program
   .action((o) => blockchain.addPhaseCompletion(o.contractor, o.phase));
 program.parse(process.argv);
 
+
+// under construction
+program
+  .command("vote")
+  .description("Vote on the latest contractor block")
+  .requiredOption("-u, --user <name>", "Your name/ID")
+  .requiredOption("-v, --vote <y/n>", "Your vote")
+  .action((opts) => {
+    const lastBlock = blockchain.getLatestBlock();
+    
+    // Logic: Only allow voting for index 2 (ACK) and beyond
+    if (!lastBlock || lastBlock.index < 2) {
+      console.log("Voting is only available for Acknowledgement and Phase blocks.");
+      return;
+    }
+
+    const votes = VoteManager.saveVote(
+      lastBlock,
+      opts.user,
+      opts.vote.toLowerCase()
+    );
+
+    const tally = {
+      yes: votes.filter(v => v.vote === 'y').length,
+      no:  votes.filter(v => v.vote === 'n').length,
+      total: votes.length
+    };
+
+    console.log(`Vote cast! Current Tally: Yes: ${tally.yes}, No: ${tally.no} (Need 10 'yes' to validate)`);
+
+    if (tally.yes >= 10) {
+      blockchain.finalizeValidatedBlock(lastBlock.hash, votes);
+    }
+  });
+
+program.parse(process.argv);
