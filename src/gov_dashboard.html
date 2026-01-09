@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Government Admin | Upload Tender</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="blockchain_engine.js"></script> <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 2rem; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
+        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        
+        button { background: #2563eb; color: white; border: none; padding: 1rem 2rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; }
+        button:hover { background: #1d4ed8; }
+
+        .hash-display { background: #f0fdf4; color: #166534; padding: 1rem; border-radius: 6px; margin-top: 1rem; display: none; word-break: break-all; font-family: monospace; border: 1px solid #bbf7d0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏛️ Upload New Tender On-Chain</h2>
+    
+    <div class="form-group">
+        <label>Project Title</label>
+        <input type="text" id="projectTitle" placeholder="e.g. Metro Line Extension Ph-2">
+    </div>
+
+    <div class="form-group">
+        <label>Jurisdiction / Block Type</label>
+        <select id="jurisdiction">
+            <option value="Urban">Urban Infrastructure</option>
+            <option value="Rural">Rural Development</option>
+            <option value="Transport">Transport & Highways</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Scope of Work</label>
+        <textarea id="scope" rows="4" placeholder="Describe the project deliverables..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Budget (INR Crores)</label>
+        <input type="number" id="budget" placeholder="e.g. 500">
+    </div>
+
+    <button onclick="uploadTender()">⛏️ Mine Block & Publish Tender</button>
+    
+    <div id="success-msg" class="hash-display"></div>
+</div>
+
+<script>
+    function uploadTender() {
+        // 1. Gather Data
+        const title = document.getElementById("projectTitle").value;
+        const jurisdiction = document.getElementById("jurisdiction").value;
+        const scope = document.getElementById("scope").value;
+        const budget = document.getElementById("budget").value;
+
+        if(!title || !scope || !budget) { alert("Please fill all fields"); return; }
+
+        // 2. Create Tender Object
+        const tenderData = {
+            id: "TNDR-" + Math.floor(Math.random() * 10000), // Random ID
+            title: title,
+            jurisdiction: jurisdiction,
+            scope: scope,
+            budget: budget,
+            status: "OPEN",
+            createdAt: new Date().toISOString()
+        };
+
+        // 3. UPLOAD TO BLOCKCHAIN
+        // This replaces the old localStorage logic
+        const minedBlock = GovChain.addData('TENDER_UPLOAD', tenderData);
+
+        // 4. Show Success
+        const msg = document.getElementById("success-msg");
+        msg.style.display = "block";
+        msg.innerHTML = `
+            <strong>✅ Success! Tender Uploaded On-Chain</strong><br>
+            Block Index: ${minedBlock.index}<br>
+            Hash: ${minedBlock.hash}
+        `;
+        
+        // Optional: Clear form
+        document.getElementById("projectTitle").value = "";
+    }
+</script>
+
+</body>
+</html>
