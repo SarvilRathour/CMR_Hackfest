@@ -1,0 +1,10 @@
+[
+  {
+    "contractor": "L&T",
+    "timestamp": "2026-01-09T17:37:29.674Z",
+    "nonce": 52723,
+    "hash": "00005908c6fae0cf1119c6b6d180564505b24e2e749da6fecd67d5160162f56d",
+    "difficulty": 4,
+    "target_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c"
+  }
+]

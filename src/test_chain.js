@@ -39,6 +39,23 @@ class Blockchain{
   constructor(){
     this.chain=this.loadChain();
   }
+  validate_chain(){
+    for(let i=1;i<this.chain.length;i++){
+      const current=this.chain[i];
+      const previous=this.chain[i-1];
+      const recalculateHash=crypto
+        .createHash("sha256")
+        .update(
+          current.index+current.timestamp+current.block_type+JSON.stringify(current.payload)+current.previousHash+current.nonce
+        )
+        .digest("hex");
+        if(current.hash !==recalculateHash){
+          console.log(`Block ${current.index} has been tampered`);
+          return;
+        }
+        // if(current.previousHash!==previous_hash)
+    }
+  }
   loadChain(){
     if(fs.existsSync(CHAIN_FILE)){
       return JSON.parse(fs.readFileSync(CHAIN_FILE));
@@ -353,7 +370,7 @@ program
   .requiredOption("-c, --contractor <name>")
   .requiredOption("-p, --phase <phase>")
   .action((o) => blockchain.addPhaseCompletion(o.contractor, o.phase));
-program.parse(process.argv);
+// program.parse(process.argv);
 
 
 // under construction
@@ -389,5 +406,10 @@ program
       blockchain.finalizeValidatedBlock(lastBlock.hash, votes);
     }
   });
-
+program
+  .command("validate")
+  .description("Validate blockchain integrity")
+  .action(() => {
+    blockchain.validate_chain();
+  });
 program.parse(process.argv);
