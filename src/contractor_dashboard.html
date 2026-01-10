@@ -1,432 +1,117 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Portal | Gov-Tenders</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        .accordion-wrapper {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .accordion-wrapper.active { grid-template-rows: 1fr; }
-        .accordion-content { overflow: hidden; }
-
-        .glass-input {
-            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
-        }
-
-        .btn-apply {
-            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all active:scale-95 text-sm;
-        }
-
-        .status-badge {
-            @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
-    </style>
-</head>
-
-<body class="bg-[#F4F7FE] min-h-screen pb-20">
-
-<div class="max-w-5xl mx-auto px-6 pt-12">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <div class="text-center md:text-left">
-            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Vendor Dashboard</span>
-            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Project Workspace</h1>
-        </div>
-        
-        <div class="flex items-center gap-3">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-bold text-slate-800">Alpha Construction Ltd.</p>
-                <p class="text-xs text-slate-400">ID: VEND-99281</p>
-            </div>
-            <button onclick="window.location.href='../index.html'" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
-                Logout
-            </button>
-        </div>
-    </header>
-
-    <div class="mb-12">
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Ongoing Contracts</h2>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4">
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-8">
-                    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
-                        <div>
-                            <span class="status-badge bg-emerald-100 text-emerald-600">Active Phase: 03</span>
-                            <h3 class="text-xl font-bold text-slate-800 mt-2">Smart City Grid Expansion</h3>
-                            <p class="text-sm text-slate-400">Contract ID: #TMT-88210</p>
-                        </div>
-                        <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="text-indigo-600 font-bold text-sm hover:underline flex items-center gap-1">
-                            Add Progress Block 
-                            <svg id="updateIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="w-full bg-slate-100 h-3 rounded-full mb-2">
-                        <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">45% Total Completion</p>
-
-                    <div id="updateSection" class="accordion-wrapper">
-                        <div class="accordion-content">
-                            <div class="mt-8 pt-8 border-t border-slate-100">
-                                <h4 class="font-bold text-slate-800 mb-4">Submit New Project Block</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" class="glass-input" placeholder="Block Title (e.g. Sub-structure foundation)">
-                                    <input type="date" class="glass-input">
-                                    <textarea class="glass-input md:col-span-2" rows="2" placeholder="Describe work completed in this block..."></textarea>
-                                    <div class="md:col-span-2 flex justify-end">
-                                        <button onclick="alert('Block submitted for Gov approval!')" class="btn-apply">Submit Block for Review</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-amber-500 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Open Government Tenders</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-901</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Municipal Solar Park</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Installation of 500kW solar panels across municipal rooftops including maintenance for 5 years.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Oct 24, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-442</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Bridge Reinforcement Ph-II</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Structural audit and reinforcement of the East-Wing bypass bridge system.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Nov 12, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function toggleAccordion(contentId, iconId) {
-        const wrapper = document.getElementById(contentId);
-        const icon = document.getElementById(iconId);
-        wrapper.classList.toggle('active');
-        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
-</script>
-
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Portal | Gov-Tenders</title>
+    <title>Bid Dashboard | Gov-Tenders</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        .accordion-wrapper {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .accordion-wrapper.active { grid-template-rows: 1fr; }
-        .accordion-content { overflow: hidden; }
-
-        .glass-input {
-            @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all outline-none text-gray-700;
-        }
-
-        .btn-apply {
-            @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all active:scale-95 text-sm;
-        }
-
-        .status-badge {
-            @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
-        
-        /* Vertical line for the blockchain visual */
-        .chain-line {
-            position: absolute;
-            left: 28px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #e2e8f0;
-            z-index: 0;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F7FE; }
+        .glass-panel { @apply bg-white border border-gray-100 shadow-sm rounded-2xl; }
+        .chip { @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide; }
+        .chip-open { @apply bg-emerald-100 text-emerald-700; }
+        .btn-bid { @apply w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-bold transition-all active:scale-95 text-sm; }
     </style>
 </head>
+<body class="p-4 md:p-6 lg:p-8">
 
-<body class="bg-[#F4F7FE] min-h-screen pb-20">
-
-<div class="max-w-5xl mx-auto px-6 pt-12">
-    <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <div class="text-center md:text-left">
-            <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Vendor Dashboard</span>
-            <h1 class="text-4xl font-extrabold text-slate-900 mt-1">Project Workspace</h1>
-        </div>
-        
+    <div class="max-w-7xl mx-auto mb-8 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="text-right hidden md:block">
-                <p class="text-sm font-bold text-slate-800">Alpha Construction Ltd.</p>
-                <p class="text-xs text-slate-400">ID: VEND-99281</p>
+            <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
             </div>
-            <button onclick="window.location.href='../index.html'" class="flex items-center gap-2 px-5 py-2.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white rounded-xl font-semibold transition-all shadow-sm active:scale-95">
-                Logout
-            </button>
+            <div>
+                <h1 class="font-bold text-slate-900 text-lg leading-tight">Contractor Portal</h1>
+                <p class="text-xs text-slate-500">Logged in as <span id="userDisplay" class="font-semibold text-indigo-600">...</span></p>
+            </div>
         </div>
-    </header>
+        <a href="contractor_login.html" class="px-4 py-2 bg-white text-slate-600 text-sm font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">Logout</a>
+    </div>
 
-    <div class="mb-12">
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Ongoing Contracts</h2>
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-900">Live Tenders</h2>
+            <div class="text-sm font-bold text-slate-400">Showing available opportunities</div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-8">
-                    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
-                        <div>
-                            <span class="status-badge bg-emerald-100 text-emerald-600">Active Phase: 03</span>
-                            <h3 class="text-xl font-bold text-slate-800 mt-2">Smart City Grid Expansion</h3>
-                            <p class="text-sm text-slate-400">Contract ID: #TMT-88210</p>
-                        </div>
-                        <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="text-indigo-600 font-bold text-sm hover:underline flex items-center gap-1">
-                            Add Progress Block 
-                            <svg id="updateIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="w-full bg-slate-100 h-3 rounded-full mb-2">
-                        <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">45% Total Completion</p>
-
-                    <div id="updateSection" class="accordion-wrapper">
-                        <div class="accordion-content">
-                            <div class="mt-8 pt-8 border-t border-slate-100">
-                                <h4 class="font-bold text-slate-800 mb-4">Submit New Project Block</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="blockTitle" class="glass-input" placeholder="Block Title (e.g. Sub-structure foundation)">
-                                    <input type="date" id="blockDate" class="glass-input">
-                                    <textarea id="blockDetails" class="glass-input md:col-span-2" rows="2" placeholder="Describe work completed in this block..."></textarea>
-                                    <div class="md:col-span-2 flex justify-end">
-                                        <button onclick="alert('Block submitted for Review!')" class="btn-apply">Submit Block for Review</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div id="tendersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="emptyState" class="hidden col-span-full py-12 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
                 </div>
+                <h3 class="text-lg font-bold text-slate-800">No Active Tenders</h3>
+                <p class="text-slate-500">Wait for the government officials to publish new projects.</p>
             </div>
         </div>
     </div>
-
-    <div class="mb-12">
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-slate-900 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Immutable Project Ledger</h2>
-        </div>
-
-        <div class="relative">
-            <div id="blockchain-container" class="space-y-6 relative z-10">
-                <div class="bg-white p-8 rounded-2xl text-center text-slate-400 border border-slate-100">
-                    <div class="animate-pulse">Accessing distributed ledger...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-2 h-6 bg-amber-500 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-slate-800">Open Government Tenders</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-901</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Municipal Solar Park</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Installation of 500kW solar panels across municipal rooftops.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Oct 24, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="status-badge bg-amber-50 text-amber-600">Bidding Open</span>
-                    <span class="text-xs font-mono text-slate-400">ID: PRJ-442</span>
-                </div>
-                <h3 class="font-bold text-lg text-slate-800 mb-2">Bridge Reinforcement Ph-II</h3>
-                <p class="text-sm text-slate-500 mb-6 line-clamp-2">Structural audit and reinforcement of the East-Wing bypass.</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <div class="text-xs text-slate-400">
-                        <p>Closing Date:</p>
-                        <p class="font-bold text-slate-600">Nov 12, 2026</p>
-                    </div>
-                    <button class="btn-apply">Apply Now</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
-    // 1. UI Interactions
-    function toggleAccordion(contentId, iconId) {
-        const wrapper = document.getElementById(contentId);
-        const icon = document.getElementById(iconId);
-        wrapper.classList.toggle('active');
-        icon.style.transform = wrapper.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
+    // 1. Check Login
+    const currentUser = localStorage.getItem('currentUser') || 'Guest';
+    document.getElementById('userDisplay').innerText = currentUser;
 
-    // 2. Blockchain Fetching Logic
-    async function loadBlockchainData() {
-        const container = document.getElementById('blockchain-container');
-        
-        try {
-            const response = await fetch('http://localhost:3000/blockchain');
-            if (!response.ok) throw new Error('Network response was not ok');
-            
-            const chain = await response.json();
-            console.log(chain)
-            
-            // Clear loading state
-            container.innerHTML = '';
+    // 2. Load Tenders
+    const tenders = JSON.parse(localStorage.getItem('tenders') || '[]');
+    const container = document.getElementById('tendersContainer');
+    const emptyState = document.getElementById('emptyState');
 
-            chain.forEach((block, index) => {
-                const blockCard = document.createElement('div');
-                blockCard.className = "bg-white p-6 rounded-2xl border border-slate-100 shadow-sm animate-slide relative overflow-hidden";
-                
-                // Color coding based on block type
-                const typeColor = block.block_type === 'Genesis' ? 'bg-indigo-600' : 'bg-emerald-500';
-
-                // Format the payload keys/values dynamically
-                const payloadHtml = Object.entries(block.payload).map(([key, val]) => `
-                    <div class="flex justify-between py-1 border-b border-slate-50 last:border-0">
-                        <span class="text-slate-400 capitalize">${key.replace('_', ' ')}:</span>
-                        <span class="text-slate-700 font-semibold">${val}</span>
-                    </div>
-                `).join('');
-
-                blockCard.innerHTML = `
-                    <div class="absolute top-0 left-0 w-1.5 h-full ${typeColor}"></div>
+    if (tenders.length === 0) {
+        emptyState.classList.remove('hidden');
+    } else {
+        tenders.forEach((t, index) => {
+            const card = `
+                <div class="glass-panel p-6 flex flex-col h-full hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-4">
+                        <span class="chip chip-open">${t.status}</span>
+                        <span class="text-xs font-bold text-slate-400">#${t.id}</span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">${t.title}</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow line-clamp-2">${t.desc}</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-gray-50">
                         <div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Index #${block.index}</span>
-                            <h4 class="font-bold text-slate-800 uppercase text-xs mt-1">${block.block_type}</h4>
+                            <span class="block text-xs font-bold text-slate-400 uppercase">Budget</span>
+                            <span class="font-bold text-slate-800">$${t.budget}</span>
                         </div>
                         <div class="text-right">
-                            <p class="text-[10px] text-slate-400 font-mono">${new Date(block.timestamp).toLocaleString()}</p>
+                            <span class="block text-xs font-bold text-slate-400 uppercase">Deadline</span>
+                            <span class="font-bold text-indigo-600">${t.deadline}</span>
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl p-4 text-xs mb-4">
-                        ${payloadHtml}
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[9px] font-bold text-slate-400 w-16">PREV HASH:</span>
-                            <span class="text-[9px] font-mono text-slate-500 truncate italic">${block.previous_hash}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[9px] font-bold text-slate-400 w-16">CURR HASH:</span>
-                            <span class="text-[9px] font-mono text-indigo-600 font-bold truncate">${block.hash}</span>
+                    <div class="mt-auto">
+                        <div class="flex gap-2">
+                            <input type="number" id="bid_${index}" placeholder="Your Bid ($)" class="w-2/3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-500">
+                            <button onclick="placeBid(${index})" class="w-1/3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-sm transition-colors">Bid</button>
                         </div>
                     </div>
-                `;
-
-                container.appendChild(blockCard);
-
-                // Add a visual connector between blocks
-                if (index < chain.length - 1) {
-                    const connector = document.createElement('div');
-                    connector.className = "flex justify-center -my-3 relative z-20";
-                    connector.innerHTML = `
-                        <div class="bg-white border-2 border-slate-100 rounded-full p-1 shadow-sm">
-                            <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                            </svg>
-                        </div>
-                    `;
-                    container.appendChild(connector);
-                }
-            });
-
-        } catch (error) {
-            container.innerHTML = `
-                <div class="bg-rose-50 border border-rose-100 p-6 rounded-2xl text-rose-600 text-sm">
-                    <strong>Connection Error:</strong> Could not reach the blockchain server at <code>localhost:3000/blockchain</code>. 
-                    Please ensure your backend is running.
                 </div>
             `;
-            console.error('Blockchain load error:', error);
-        }
+            container.innerHTML += card;
+        });
     }
 
-    // Load data on page init
-    window.addEventListener('DOMContentLoaded', loadBlockchainData);
+    // 3. Bid Function
+    function placeBid(index) {
+        const amount = document.getElementById(`bid_${index}`).value;
+        if (!amount) {
+            alert("Please enter a bid amount.");
+            return;
+        }
+
+        const tender = tenders[index];
+        alert(`Bid of $${amount} placed successfully for "${tender.title}"!`);
+        
+        // Clear input
+        document.getElementById(`bid_${index}`).value = "";
+        
+        // Optional: Save Bid logic here if needed
+        // let bids = JSON.parse(localStorage.getItem('bids') || '[]');
+        // bids.push({ tenderId: tender.id, bidder: currentUser, amount: amount });
+        // localStorage.setItem('bids', JSON.stringify(bids));
+    }
 </script>
 
 </body>
