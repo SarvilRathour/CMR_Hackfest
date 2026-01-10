@@ -28,6 +28,33 @@
 <body>
 
 <div class="container">
+    <h2>Upload New Tender On-Chain</h2>
+    
+    <div class="form-group">
+        <label>Project Title</label>
+        <input type="text" id="projectTitle" placeholder="e.g. Metro Line Extension Ph-2">
+    </div>
+
+    <div class="form-group">
+        <label>Jurisdiction / Block Type</label>
+        <select id="jurisdiction">
+            <option value="Urban">Urban Infrastructure</option>
+            <option value="Rural">Rural Development</option>
+            <option value="Transport">Transport & Highways</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Scope of Work</label>
+        <textarea id="scope" rows="4" placeholder="Describe the project deliverables..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Budget (INR Crores)</label>
+        <input type="number" id="budget" placeholder="e.g. 500">
+    </div>
+
+    <button onclick="uploadTender()">Mine Block & Publish Tender</button>
     <div class="header-row">
         <h2>Government Dashboard</h2>
         <button class="secondary-btn" onclick="GovChain.viewLedger()">View Blockchain Ledger</button>
@@ -88,6 +115,14 @@
         document.getElementById('t_budget').value = "";
     }
 
+        // 4. Show Success
+        const msg = document.getElementById("success-msg");
+        msg.style.display = "block";
+        msg.innerHTML = `
+            <strong>Success! Tender Uploaded On-Chain</strong><br>
+            Block Index: ${minedBlock.index}<br>
+            Hash: ${minedBlock.hash}
+        `;
     function loadEvidence() {
         const chain = GovChain.getChain();
         const evidenceBlocks = chain.filter(b => b.type === 'EVIDENCE');

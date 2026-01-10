@@ -6,5 +6,29 @@
     "hash": "00005908c6fae0cf1119c6b6d180564505b24e2e749da6fecd67d5160162f56d",
     "difficulty": 4,
     "target_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c"
+  },
+  {
+    "contractor": "SarvilConstruction",
+    "timestamp": "2026-01-10T02:31:11.122Z",
+    "nonce": 50778,
+    "hash": "0000febc77761acf73a31ff41fe35342a422c68ab22f2a98a95a03e94945d9e0",
+    "difficulty": 4,
+    "target_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c"
+  },
+  {
+    "contractor": "L&T",
+    "timestamp": "2026-01-10T02:31:18.431Z",
+    "nonce": 52723,
+    "hash": "00005908c6fae0cf1119c6b6d180564505b24e2e749da6fecd67d5160162f56d",
+    "difficulty": 4,
+    "target_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c"
+  },
+  {
+    "contractor": "Tata",
+    "timestamp": "2026-01-10T02:35:16.355Z",
+    "nonce": 134657,
+    "hash": "00004afa443747ad719f1186e63b3e35362ddcfb330ffc222c892298e4193c79",
+    "difficulty": 4,
+    "target_hash": "bdbb3f665fdfad25ae6fccb8ac37ba7ff0ad672668fb0728609adc85555e586c"
   }
 ]

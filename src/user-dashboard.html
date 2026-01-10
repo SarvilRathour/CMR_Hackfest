@@ -1,6 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citizen Dashboard</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="blockchain_engine.js"></script>
+
+  <style>
+    .dynamic-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .dynamic-card h4 {
+      margin: 0 0 10px 0;
+      color: #1e3a8a;
+    }
+
+    .badge {
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    body {
+      font-family: Inter, system-ui;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .dash-container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .header-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .menu-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .menu-card:hover {
+      border-color: #2563eb;
+    }
+
+    .voting-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .vote-btn {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .vote-btn:hover {
+      background: #1d4ed8;
+    }
+  </style>
     <meta charset="UTF-8">
     <title>Citizen Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -24,8 +118,29 @@
         .ledger-btn { background: #475569; width: 100%; margin-top: 0; }
     </style>
 </head>
-<body>
 
+<body>
+  <div class="dash-container">
+    <div class="header-card">
+      <div>
+        <h2 style="margin: 0;">Citizen Dashboard</h2>
+        <small>ID Hash: <span id="user-hash-display">Loading...</span></small>
+      </div>
+      <button onclick="logout()" style="background:none;border:none;color:red;cursor:pointer;">
+        Sign Out
+      </button>
+    </div>
+
+    <div id="main-menu" class="menu-grid">
+      <div class="menu-card" onclick="loadTendersView()">
+        <h3>🗳️ View Active Tenders</h3>
+        <p>Vote for contractors on live government tenders.</p>
+      </div>
+
+      <div class="menu-card" onclick="votingBlocksView()">
+        <h3>✅ Audit Projects</h3>
+        <p>Verify completion of ongoing works.</p>
+      </div>
 <div class="container">
     <div class="card">
         <div class="header">
@@ -41,6 +156,108 @@
     </div>
 </div>
 
+    <div id="tender-section" class="voting-section">
+      <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+        <h3>Active Government Tenders</h3>
+        <button onclick="showMenu()">Back</button>
+      </div>
+      <div id="tender-list-container"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- AUTH ----------
+    const userHash = sessionStorage.getItem('active_user_hash');
+    if (!userHash) window.location.href = 'user_login.html';
+    document.getElementById('user-hash-display').textContent =
+      userHash.substring(0, 10) + '...';
+
+    // ---------- NAV ----------
+    function showMenu() {
+      document.getElementById('main-menu').style.display = 'grid';
+      document.getElementById('tender-section').style.display = 'none';
+      const audit = document.getElementById('audit-section');
+      if (audit) audit.style.display = 'none';
+    }
+
+    // ---------- TENDERS ----------
+    function loadTendersView() {
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('tender-section').style.display = 'block';
+
+      const container = document.getElementById('tender-list-container');
+      container.innerHTML = '<p>Scanning Blockchain Ledger...</p>';
+
+      if (!window.GovChain) {
+        container.innerHTML = '<p style="color:red;">GovChain not loaded.</p>';
+        return;
+      }
+
+      const tenders = GovChain.getAllTenders();
+
+      if (tenders.length === 0) {
+        container.innerHTML = '<p>No active tenders found on-chain.</p>';
+        return;
+      }
+
+      let html = '';
+      tenders.forEach(tender => {
+        html += `
+          <div class="dynamic-card">
+            <div style="display:flex;justify-content:space-between;">
+              <h4>${tender.title}</h4>
+              <span class="badge">${tender.jurisdiction}</span>
+            </div>
+            <p style="color:#666;font-size:0.9rem;">${tender.scope}</p>
+            <p><strong>Budget:</strong> ₹${tender.budget} Cr</p>
+            <div style="margin-top:10px;display:flex;gap:10px;">
+              <button class="vote-btn" onclick="voteOnChain('${tender.id}','InfraCorp')">
+                Vote: InfraCorp
+              </button>
+              <button class="vote-btn" onclick="voteOnChain('${tender.id}','BuildWell')">
+                Vote: BuildWell
+              </button>
+            </div>
+          </div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // ---------- AUDIT ----------
+    async function votingBlocksView() {
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('tender-section').style.display = 'none';
+
+      let audit = document.getElementById('audit-section');
+      if (!audit) {
+        document.querySelector('.dash-container').insertAdjacentHTML(
+          'beforeend',
+          `
+          <div id="audit-section" class="voting-section" style="display:block;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+              <h3>Project Audit Ledger (Acknowledgements)</h3>
+              <button onclick="showMenu()">Back</button>
+            </div>
+            <div id="audit-list-container">
+              <p>Scanning Blockchain Ledger...</p>
+            </div>
+          </div>`
+        );
+      } else {
+        audit.style.display = 'block';
+      }
+
+      const list = document.getElementById('audit-list-container');
+
+      try {
+        const res = await fetch('http://localhost:3000/blockchain');
+        const chain = await res.json();
+        const acks = chain.filter(b => b.block_type === 'ACKNOWLEDGEMENT');
+
+        if (!acks.length) {
+          list.innerHTML = '<p>No project acknowledgements found.</p>';
+          return;
 <script>
     // 1. Check Authentication
     const userHash = sessionStorage.getItem('active_user_hash');
@@ -94,12 +311,77 @@
             const block = GovChain.addData('VOTE', voteData);
             alert(`Vote Recorded Successfully!\nBlock Hash: ${block.hash}`);
         }
+
+        // ... inside votingBlocksView function ...
+
+list.innerHTML = acks.map(b => `
+  <div class="dynamic-card" style="border-left:5px solid #10b981;">
+    <div style="display:flex; justify-content:space-between; align-items:start;">
+      <div>
+        <h4>${b.payload.action.replaceAll('_',' ')}</h4>
+        <p><strong>Contractor:</strong> ${b.payload.contractor}</p>
+        <p><small style="color:#666">Block Index: ${b.index}</small></p>
+      </div>
+      
+      <div style="display:flex; gap:8px;">
+        <button onclick="submitAuditVote(${b.index}, 'y')" 
+                style="padding:5px 15px; cursor:pointer; background:#10b981; color:white; border:none; border-radius:4px;">
+                Yes
+        </button>
+        <button onclick="submitAuditVote(${b.index}, 'n')" 
+                style="padding:5px 15px; cursor:pointer; background:#ef4444; color:white; border:none; border-radius:4px;">
+                No
+        </button>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <small>${new Date(b.timestamp).toLocaleString()}</small>
+    </div>
+  </div>
+`).join('');
+      } catch {
+        list.innerHTML = '<p style="color:red;">Blockchain node unreachable.</p>';
+      }
     }
 
     function logout() {
-        sessionStorage.clear();
-        window.location.href = 'user_login.html';
+      sessionStorage.clear();
+      window.location.href = 'user_login.html';
     }
+
+  async function submitAuditVote(blockIndex, voteChoice) {
+  // Construct the payload
+  const voteHash = CryptoJS.SHA256(userHash + blockIndex + voteChoice + Date.now()).toString();
+
+  const voteData = {
+    "index": voteHash, // Using the generated hash as the unique ID
+    "voter": userHash,
+    "vote": voteChoice,
+    "timestamp": new Date().toISOString(),
+    "verified_block_index": blockIndex
+  };
+
+  try {
+    const response = await fetch('http://localhost:3000/post_votes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteData)
+    });
+
+    if (response.ok) {
+      alert(`Vote "${voteChoice.toUpperCase()}" submitted successfully for Block #${blockIndex}`);
+    } else {
+      const err = await response.json();
+      alert("Error submitting vote: " + (err.message || "Server Error"));
+    }
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    alert("Could not connect to the server to post vote.");
+  }
+}
+  </script>
 
     // Initialize
     loadTenders();
