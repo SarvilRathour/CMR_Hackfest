@@ -22,7 +22,7 @@
 <body>
 
 <div class="container">
-    <h2>🏛️ Upload New Tender On-Chain</h2>
+    <h2>Upload New Tender On-Chain</h2>
     
     <div class="form-group">
         <label>Project Title</label>
@@ -48,7 +48,7 @@
         <input type="number" id="budget" placeholder="e.g. 500">
     </div>
 
-    <button onclick="uploadTender()">⛏️ Mine Block & Publish Tender</button>
+    <button onclick="uploadTender()">Mine Block & Publish Tender</button>
     
     <div id="success-msg" class="hash-display"></div>
 </div>
@@ -82,7 +82,7 @@
         const msg = document.getElementById("success-msg");
         msg.style.display = "block";
         msg.innerHTML = `
-            <strong>✅ Success! Tender Uploaded On-Chain</strong><br>
+            <strong>Success! Tender Uploaded On-Chain</strong><br>
             Block Index: ${minedBlock.index}<br>
             Hash: ${minedBlock.hash}
         `;
