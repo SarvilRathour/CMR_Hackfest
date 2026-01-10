@@ -2,172 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Government Admin | Dashboard</title>
+    <title>Government Admin Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="blockchain_engine.js"></script> 
-    
+    <script src="blockchain_engine.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 2rem; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; margin-top: 0; }
+        h3 { color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-top: 30px; }
         
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
-        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
         
-        button { background: #2563eb; color: white; border: none; padding: 1rem 2rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; }
+        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #1d4ed8; }
-
-        .hash-display { background: #f0fdf4; color: #166534; padding: 1rem; border-radius: 6px; margin-top: 1rem; display: none; word-break: break-all; font-family: monospace; border: 1px solid #bbf7d0; }
-
-        /* Styles for Evidence Feed */
-        .feed-btn { background: #475569; margin-bottom: 20px; }
-        .feed-btn:hover { background: #334155; }
         
-        .evidence-card {
-            background: white;
-            border: 1px solid #cbd5e1;
-            padding: 1.5rem;
-            border-radius: 8px;
-            display: flex;
-            gap: 20px;
-            align-items: start;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .evidence-img {
-            width: 150px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .secondary-btn { background: #475569; width: auto; padding: 8px 16px; font-size: 14px; }
+        
+        .status-box { background: #f0fdf4; color: #166534; padding: 15px; border-radius: 6px; margin-top: 15px; display: none; word-break: break-all; font-family: monospace; border: 1px solid #bbf7d0; }
+        
+        .evidence-card { border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; display: flex; gap: 20px; border-radius: 6px; background: #fff; }
+        .evidence-img { width: 150px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; background: #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🏛️ Upload New Tender On-Chain</h2>
+    <div class="header-row">
+        <h2>Government Dashboard</h2>
+        <button class="secondary-btn" onclick="GovChain.viewLedger()">View Blockchain Ledger</button>
+    </div>
+
+    <h3>Publish New Tender</h3>
+    <label>Project Title</label>
+    <input type="text" id="t_title" placeholder="e.g. Metro Line Phase 2">
     
-    <div class="form-group">
-        <label>Project Title</label>
-        <input type="text" id="projectTitle" placeholder="e.g. Metro Line Extension Ph-2">
-    </div>
-
-    <div class="form-group">
-        <label>Jurisdiction / Block Type</label>
-        <select id="jurisdiction">
-            <option value="Urban">Urban Infrastructure</option>
-            <option value="Rural">Rural Development</option>
-            <option value="Transport">Transport & Highways</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Scope of Work</label>
-        <textarea id="scope" rows="4" placeholder="Describe the project deliverables..."></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>Budget (INR Crores)</label>
-        <input type="number" id="budget" placeholder="e.g. 500">
-    </div>
-
-    <button onclick="uploadTender()">⛏️ Mine Block & Publish Tender</button>
-    <div id="success-msg" class="hash-display"></div>
-
-    <hr style="margin: 3rem 0; border: 0; border-top: 2px dashed #e2e8f0;">
-
-    <h2>📸 Live Contractor Feed (On-Chain)</h2>
-    <p style="color:#64748b; margin-bottom: 1rem;">View immutable site evidence uploaded by contractors.</p>
+    <label>Jurisdiction Type</label>
+    <select id="t_jur">
+        <option value="Urban Infrastructure">Urban Infrastructure</option>
+        <option value="Rural Development">Rural Development</option>
+        <option value="Transport">Transport & Highways</option>
+    </select>
     
-    <button class="feed-btn" onclick="loadEvidence()">🔄 Refresh Evidence Feed</button>
-    <div id="evidence-feed">
-        <p style="color:#94a3b8; font-style:italic;">Click refresh to load blockchain data...</p>
-    </div>
+    <label>Scope of Work</label>
+    <textarea id="t_scope" rows="3" placeholder="Describe the project details..."></textarea>
+    
+    <label>Budget (INR Crores)</label>
+    <input type="number" id="t_budget" placeholder="e.g. 500">
+    
+    <button onclick="publishTender()">Mine Block & Publish Tender</button>
+    <div id="tender-msg" class="status-box"></div>
+
+    <h3>Contractor Evidence Feed</h3>
+    <button class="secondary-btn" style="width: 100%; margin-bottom: 15px;" onclick="loadEvidence()">Refresh Blockchain Data</button>
+    <div id="feed-area"></div>
 </div>
 
 <script>
-    // --- FUNCTION 1: Upload Tender ---
-    function uploadTender() {
-        const title = document.getElementById("projectTitle").value;
-        const jurisdiction = document.getElementById("jurisdiction").value;
-        const scope = document.getElementById("scope").value;
-        const budget = document.getElementById("budget").value;
+    function publishTender() {
+        const title = document.getElementById('t_title').value;
+        const type = document.getElementById('t_jur').value;
+        const scope = document.getElementById('t_scope').value;
+        const budget = document.getElementById('t_budget').value;
 
-        if(!title || !scope || !budget) { alert("Please fill all fields"); return; }
+        if(!title || !budget) return alert("Please fill in all fields.");
 
-        const tenderData = {
-            id: "TNDR-" + Math.floor(Math.random() * 10000),
+        const data = {
+            id: "TND-" + Math.floor(Math.random() * 10000),
             title: title,
-            jurisdiction: jurisdiction,
+            type: type,
             scope: scope,
             budget: budget,
-            status: "OPEN",
-            createdAt: new Date().toISOString()
+            status: "OPEN"
         };
 
-        // Upload to Blockchain
-        const minedBlock = GovChain.addData('TENDER_UPLOAD', tenderData);
-
-        // Show Success
-        const msg = document.getElementById("success-msg");
-        msg.style.display = "block";
-        msg.innerHTML = `
-            <strong>✅ Success! Tender Uploaded On-Chain</strong><br>
-            Block Index: ${minedBlock.index}<br>
-            Hash: ${minedBlock.hash}
-        `;
+        const block = GovChain.addData('TENDER', data);
         
-        // Clear form
-        document.getElementById("projectTitle").value = "";
-        document.getElementById("scope").value = "";
-        document.getElementById("budget").value = "";
+        const msg = document.getElementById('tender-msg');
+        msg.style.display = 'block';
+        msg.innerHTML = `<strong>Tender Published Successfully</strong><br>Block Index: ${block.index}<br>Hash: ${block.hash}`;
+        
+        // Clear inputs
+        document.getElementById('t_title').value = "";
+        document.getElementById('t_scope').value = "";
+        document.getElementById('t_budget').value = "";
     }
 
-    // --- FUNCTION 2: Load Evidence Feed ---
     function loadEvidence() {
-        const container = document.getElementById('evidence-feed');
-        container.innerHTML = "<p>Scanning Ledger for Evidence Blocks...</p>";
-
-        // 1. Get entire chain
         const chain = GovChain.getChain();
+        const evidenceBlocks = chain.filter(b => b.type === 'EVIDENCE');
+        const container = document.getElementById('feed-area');
         
-        // 2. Filter for EVIDENCE_UPLOAD blocks
-        const evidenceBlocks = chain.filter(block => block.type === 'EVIDENCE_UPLOAD');
-
         if(evidenceBlocks.length === 0) {
-            container.innerHTML = "<p>No evidence uploaded to the blockchain yet.</p>";
+            container.innerHTML = "<p style='color:#64748b; text-align:center;'>No evidence uploaded to the blockchain yet.</p>";
             return;
         }
 
-        let html = "";
-        // 3. Loop and Display
-        // We reverse the array to show the newest photos first
-        evidenceBlocks.reverse().forEach(block => {
-            const data = block.data.body; // Accessing the 'POST' body structure
-            
-            html += `
-                <div class="evidence-card">
-                    <img src="${data.evidenceData}" class="evidence-img" alt="Site Evidence">
-                    <div>
-                        <h4 style="margin:0 0 5px 0; color:#1e3a8a;">${data.projectId}</h4>
-                        <p style="margin:0; font-weight:bold; color:#334155;">${data.description}</p>
-                        <p style="margin:5px 0; font-size:0.8rem; color:#64748b;">
-                            Contractor ID: ${data.contractorId} <br>
-                            Block Index: #${block.index} | Time: ${new Date(block.timestamp).toLocaleTimeString()}
-                        </p>
-                        <div style="font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.75rem; color:#475569; word-break:break-all;">
-                            Hash: ${block.hash}
-                        </div>
+        container.innerHTML = evidenceBlocks.reverse().map(b => `
+            <div class="evidence-card">
+                <img src="${b.data.image}" class="evidence-img">
+                <div>
+                    <h4 style="margin: 0 0 5px 0;">${b.data.project}</h4>
+                    <p style="margin: 0 0 10px 0; color: #334155;">${b.data.note}</p>
+                    <div style="font-size: 12px; color: #64748b; font-family: monospace;">
+                        Contractor: ${b.data.contractor}<br>
+                        Hash: ${b.hash.substring(0, 30)}...
                     </div>
                 </div>
-            `;
-        });
-        
-        container.innerHTML = html;
+            </div>
+        `).join('');
     }
 </script>
-
 </body>
 </html>

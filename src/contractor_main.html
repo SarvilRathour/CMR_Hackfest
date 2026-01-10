@@ -2,119 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Portal | GovChain</title>
+    <title>Contractor Portal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="blockchain_engine.js"></script> <style>
-        body { font-family: 'Inter', system-ui; background: #f8fafc; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 600px; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    <script src="blockchain_engine.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; margin-top: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
         
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
-        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #475569; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #cbd5e1; box-sizing: border-box; }
         
-        /* Upload Box Styling */
-        .upload-box { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; border-radius: 8px; background: #f1f5f9; cursor: pointer; }
-        .upload-box:hover { border-color: #2563eb; background: #e0f2fe; }
-        
-        button { background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px;}
+        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         button:hover { background: #1d4ed8; }
-
-        .status-msg { margin-top: 15px; padding: 10px; border-radius: 6px; display: none; word-break: break-all; font-family: monospace; font-size: 0.85rem;}
-        .success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-        .preview-img { max-width: 100%; margin-top: 10px; border-radius: 6px; display: none; border: 1px solid #ccc; }
+        
+        .preview-box { width: 100%; height: 200px; background: #f1f5f9; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border-radius: 4px; overflow: hidden; }
+        .preview-img { max-width: 100%; max-height: 100%; display: none; }
+        
+        .status-box { background: #f0fdf4; color: #166534; padding: 10px; border-radius: 4px; margin-top: 15px; display: none; word-break: break-all; font-family: monospace; border: 1px solid #bbf7d0; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>👷 Contractor Evidence Upload</h2>
+    <h2>Contractor Upload Portal</h2>
     
-    <div class="form-group">
-        <label>Select Project ID</label>
-        <select id="projectSelect">
-            <option value="NH-44">Highway Expansion (NH-44)</option>
-            <option value="Hospital-WingA">City Hospital Wing A</option>
-        </select>
-    </div>
+    <label>Select Project</label>
+    <select id="c_project">
+        <option value="Highway Expansion (NH-44)">Highway Expansion (NH-44)</option>
+        <option value="City Hospital Wing A">City Hospital Wing A</option>
+        <option value="Metro Line Phase 2">Metro Line Phase 2</option>
+    </select>
 
-    <div class="form-group">
-        <label>Phase Update</label>
-        <input type="text" id="phaseNote" placeholder="e.g. Foundation Level Complete">
-    </div>
+    <label>Phase Update Note</label>
+    <input type="text" id="c_note" placeholder="e.g. Foundation Level 1 Complete">
 
-    <div class="form-group">
-        <label>Site Photo Evidence</label>
-        <input type="file" id="sitePhoto" accept="image/*" onchange="previewFile()">
-        <img id="imgPreview" class="preview-img" alt="Preview">
-    </div>
-
-    <button onclick="submitToBlockchain()">🚀 Upload Evidence On-Chain</button>
+    <label>Site Photo Evidence</label>
+    <input type="file" id="c_file" accept="image/*" onchange="previewImage()">
     
-    <div id="statusArea" class="status-msg success"></div>
+    <div class="preview-box">
+        <span id="placeholder-text" style="color:#94a3b8;">Image Preview</span>
+        <img id="img_preview" class="preview-img">
+    </div>
+
+    <button onclick="uploadEvidence()">Upload Evidence to Blockchain</button>
+    
+    <div id="c_msg" class="status-box"></div>
 </div>
 
 <script>
-    let base64ImageString = "";
+    let base64Img = "";
 
-    // 1. Convert Image to Base64 (Text)
-    function previewFile() {
-        const file = document.querySelector('input[type=file]').files[0];
-        const preview = document.getElementById('imgPreview');
+    function previewImage() {
+        const file = document.getElementById('c_file').files[0];
         const reader = new FileReader();
-
-        reader.addEventListener("load", function () {
-            // Show preview
-            preview.src = reader.result;
-            preview.style.display = 'block';
-            
-            // Store the Base64 string to send to blockchain
-            base64ImageString = reader.result; 
-        }, false);
-
-        if (file) {
-            reader.readAsDataURL(file);
+        
+        reader.onload = function(e) {
+            base64Img = e.target.result;
+            const img = document.getElementById('img_preview');
+            img.src = base64Img;
+            img.style.display = 'block';
+            document.getElementById('placeholder-text').style.display = 'none';
         }
+        
+        if(file) reader.readAsDataURL(file);
     }
 
-    // 2. Mock POST Method Logic
-    function submitToBlockchain() {
-        const projectId = document.getElementById('projectSelect').value;
-        const note = document.getElementById('phaseNote').value;
-
-        if(!note || !base64ImageString) {
-            alert("Please select a photo and add a note.");
-            return;
-        }
-
-        // A. Prepare the Payload (Just like a POST body)
-        const payload = {
-            method: 'POST',
-            endpoint: '/api/v1/evidence/upload',
-            timestamp: new Date().toISOString(),
-            body: {
-                contractorId: "CNTR-8821", // Hardcoded for demo
-                projectId: projectId,
-                description: note,
-                evidenceData: base64ImageString // The actual image data
-            }
+    function uploadEvidence() {
+        if(!base64Img) return alert("Please select an image first.");
+        const note = document.getElementById('c_note').value;
+        
+        const data = {
+            contractor: "CNTR-8821",
+            project: document.getElementById('c_project').value,
+            note: note || "Phase Update",
+            image: base64Img
         };
 
-        // B. Send to Blockchain Engine
-        // We use "EVIDENCE_UPLOAD" as the block type
-        const newBlock = GovChain.addData('EVIDENCE_UPLOAD', payload);
+        const block = GovChain.addData('EVIDENCE', data);
 
-        // C. Show Success
-        const status = document.getElementById('statusArea');
-        status.style.display = 'block';
-        status.innerHTML = `
-            <strong>✅ Evidence Mined to Block #${newBlock.index}</strong><br>
-            <strong>Hash:</strong> ${newBlock.hash}<br>
-            <small>Image data permanently stored on ledger.</small>
-        `;
+        const msg = document.getElementById('c_msg');
+        msg.style.display = 'block';
+        msg.innerHTML = `<strong>Success: Evidence Mined</strong><br>Block Index: ${block.index}<br>Hash: ${block.hash}`;
     }
 </script>
-
 </body>
 </html>

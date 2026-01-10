@@ -1,127 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Citizen Dashboard</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <script src="blockchain_engine.js"></script> <style>
-    /* ... (Keep your existing styles from the uploaded file) ... */
-    /* Add this for dynamic cards */
-    .dynamic-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
-    .dynamic-card h4 { margin: 0 0 10px 0; color: #1e3a8a; }
-    .badge { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
-    
-    /* Re-using your styles */
-    body { font-family: 'Inter', system-ui; background: #f3f4f6; display: flex; justify-content: center; padding: 20px; }
-    .dash-container { width: 100%; max-width: 900px; display: grid; gap: 20px; }
-    .header-card { background: white; padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .menu-card { background: white; padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; }
-    .menu-card:hover { border-color: #2563eb; }
-    .voting-section { background: white; padding: 2rem; border-radius: 12px; display: none; }
-    .vote-btn { width: 100%; padding: 10px; margin-top: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
-    .vote-btn:hover { background: #1d4ed8; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Citizen Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="blockchain_engine.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f3f4f6; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 600px; }
+        .card { background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        h2 { margin: 0; color: #1e3a8a; }
+        
+        .logout { color: #dc2626; text-decoration: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+        
+        .tender-item { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: #fff; }
+        .badge { background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+        
+        button { background: #2563eb; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-right: 10px; margin-top: 15px; font-weight: bold; }
+        button:hover { background: #1d4ed8; }
+        
+        .ledger-btn { background: #475569; width: 100%; margin-top: 0; }
+    </style>
 </head>
 <body>
 
-  <div class="dash-container">
-    
-    <div class="header-card">
-      <div>
-        <h2 style="margin:0;">Citizen Dashboard</h2>
-        <small>ID Hash: <span id="user-hash-display">Loading...</span></small>
-      </div>
-      <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer;">Sign Out</button>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h2>Citizen Dashboard</h2>
+            <a onclick="logout()" class="logout">Sign Out</a>
+        </div>
+        <p style="color: #64748b; font-size: 14px; margin-top: 5px;">ID Hash: <span id="user-hash">...</span></p>
+        <button class="ledger-btn" onclick="GovChain.viewLedger()">View Public Ledger</button>
     </div>
 
-    <div id="main-menu" class="menu-grid">
-      <div class="menu-card" onclick="loadTendersView()">
-        <h3>🗳️ View Active Tenders</h3>
-        <p>Vote for contractors on live government tenders.</p>
-      </div>
-      <div class="menu-card" onclick="alert('Audit Feature Coming Soon')">
-        <h3>✅ Audit Projects</h3>
-        <p>Verify completion of ongoing works.</p>
-      </div>
+    <div id="tender-feed">
+        <p style="text-align:center; color:#64748b;">Loading active tenders...</p>
     </div>
+</div>
 
-    <div id="tender-section" class="voting-section">
-      <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-        <h3>Active Government Tenders</h3>
-        <button onclick="showMenu()" style="padding:5px 10px;">Back</button>
-      </div>
-      
-      <div id="tender-list-container"></div>
-    </div>
-
-  </div>
-
-  <script>
-    // 1. Auth Check
+<script>
+    // 1. Check Authentication
     const userHash = sessionStorage.getItem('active_user_hash');
-    if (!userHash) window.location.href = 'user_login.html';
-    document.getElementById('user-hash-display').textContent = userHash.substring(0, 10) + "...";
-
-    // 2. Navigation
-    function showMenu() {
-        document.getElementById('tender-section').style.display = 'none';
-        document.getElementById('main-menu').style.display = 'grid';
+    if (!userHash) {
+        window.location.href = 'user_login.html';
+    } else {
+        document.getElementById('user-hash').innerText = userHash.substring(0, 15) + "...";
     }
 
-    // 3. LOAD DATA FROM BLOCKCHAIN
-    function loadTendersView() {
-        document.getElementById('main-menu').style.display = 'none';
-        document.getElementById('tender-section').style.display = 'block';
-        
-        const container = document.getElementById('tender-list-container');
-        container.innerHTML = "<p>Scanning Blockchain Ledger...</p>";
+    // 2. Load Tenders from Blockchain
+    function loadTenders() {
+        const tenders = GovChain.getAllTenders(); // Helper function from Engine
+        const container = document.getElementById('tender-feed');
 
-        // Fetch Tenders using our Engine
-        const tenders = GovChain.getAllTenders();
-
-        if (tenders.length === 0) {
-            container.innerHTML = "<p>No active tenders found on-chain.</p>";
+        if(tenders.length === 0) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center; color:#64748b;">
+                    No active tenders have been published on the blockchain yet.
+                </div>`;
             return;
         }
 
-        let html = "";
-        tenders.forEach(tender => {
-            html += `
-                <div class="dynamic-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <h4>${tender.title}</h4>
-                        <span class="badge">${tender.jurisdiction}</span>
-                    </div>
-                    <p style="color:#666; font-size:0.9rem;">${tender.scope}</p>
-                    <p><strong>Budget:</strong> ₹${tender.budget} Cr</p>
-                    
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="vote-btn" onclick="voteOnChain('${tender.id}', 'InfraCorp')">Vote: InfraCorp</button>
-                        <button class="vote-btn" onclick="voteOnChain('${tender.id}', 'BuildWell')">Vote: BuildWell</button>
-                    </div>
+        container.innerHTML = tenders.map(t => `
+            <div class="tender-item">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                    <h3 style="margin:0; color:#0f172a;">${t.title}</h3>
+                    <span class="badge">${t.type}</span>
                 </div>
-            `;
-        });
-        container.innerHTML = html;
+                <p style="color:#334155; line-height:1.5;">${t.scope}</p>
+                <div style="margin-top:10px; font-size:14px; font-weight:bold; color:#475569;">
+                    Budget: INR ${t.budget} Crores
+                </div>
+                <div style="border-top:1px solid #f1f5f9; margin-top:15px; padding-top:5px;">
+                    <button onclick="vote('${t.id}', 'InfraCorp Ltd')">Vote: InfraCorp</button>
+                    <button onclick="vote('${t.id}', 'BuildWell Pvt')">Vote: BuildWell</button>
+                </div>
+            </div>
+        `).join('');
     }
 
-    // 4. VOTE ON CHAIN
-    function voteOnChain(tenderId, choice) {
-        if(confirm(`Confirm vote for ${choice} on Tender ${tenderId}?`)) {
-            
+    // 3. Vote Logic
+    function vote(tenderId, choice) {
+        if(confirm(`Confirm vote for ${choice}? This action is irreversible.`)) {
             const voteData = {
-                voterHash: userHash,
+                voter: userHash,
                 tenderId: tenderId,
                 choice: choice,
                 timestamp: new Date().toISOString()
             };
-
-            // UPLOAD VOTE TO BLOCKCHAIN
+            
             const block = GovChain.addData('VOTE', voteData);
-
-            alert(`Vote Mined Successfully!\nBlock Hash: ${block.hash}`);
+            alert(`Vote Recorded Successfully!\nBlock Hash: ${block.hash}`);
         }
     }
 
@@ -129,6 +100,9 @@
         sessionStorage.clear();
         window.location.href = 'user_login.html';
     }
-  </script>
+
+    // Initialize
+    loadTenders();
+</script>
 </body>
 </html>
