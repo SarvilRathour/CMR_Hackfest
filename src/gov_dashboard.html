@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Government Admin | Upload Tender</title>
+    <title>Government Admin | Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="blockchain_engine.js"></script> <style>
+    <script src="blockchain_engine.js"></script> 
+    
+    <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 2rem; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; }
         
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
@@ -17,6 +19,29 @@
         button:hover { background: #1d4ed8; }
 
         .hash-display { background: #f0fdf4; color: #166534; padding: 1rem; border-radius: 6px; margin-top: 1rem; display: none; word-break: break-all; font-family: monospace; border: 1px solid #bbf7d0; }
+
+        /* Styles for Evidence Feed */
+        .feed-btn { background: #475569; margin-bottom: 20px; }
+        .feed-btn:hover { background: #334155; }
+        
+        .evidence-card {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            align-items: start;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .evidence-img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -49,13 +74,22 @@
     </div>
 
     <button onclick="uploadTender()">⛏️ Mine Block & Publish Tender</button>
-    
     <div id="success-msg" class="hash-display"></div>
+
+    <hr style="margin: 3rem 0; border: 0; border-top: 2px dashed #e2e8f0;">
+
+    <h2>📸 Live Contractor Feed (On-Chain)</h2>
+    <p style="color:#64748b; margin-bottom: 1rem;">View immutable site evidence uploaded by contractors.</p>
+    
+    <button class="feed-btn" onclick="loadEvidence()">🔄 Refresh Evidence Feed</button>
+    <div id="evidence-feed">
+        <p style="color:#94a3b8; font-style:italic;">Click refresh to load blockchain data...</p>
+    </div>
 </div>
 
 <script>
+    // --- FUNCTION 1: Upload Tender ---
     function uploadTender() {
-        // 1. Gather Data
         const title = document.getElementById("projectTitle").value;
         const jurisdiction = document.getElementById("jurisdiction").value;
         const scope = document.getElementById("scope").value;
@@ -63,9 +97,8 @@
 
         if(!title || !scope || !budget) { alert("Please fill all fields"); return; }
 
-        // 2. Create Tender Object
         const tenderData = {
-            id: "TNDR-" + Math.floor(Math.random() * 10000), // Random ID
+            id: "TNDR-" + Math.floor(Math.random() * 10000),
             title: title,
             jurisdiction: jurisdiction,
             scope: scope,
@@ -74,11 +107,10 @@
             createdAt: new Date().toISOString()
         };
 
-        // 3. UPLOAD TO BLOCKCHAIN
-        // This replaces the old localStorage logic
+        // Upload to Blockchain
         const minedBlock = GovChain.addData('TENDER_UPLOAD', tenderData);
 
-        // 4. Show Success
+        // Show Success
         const msg = document.getElementById("success-msg");
         msg.style.display = "block";
         msg.innerHTML = `
@@ -87,8 +119,53 @@
             Hash: ${minedBlock.hash}
         `;
         
-        // Optional: Clear form
+        // Clear form
         document.getElementById("projectTitle").value = "";
+        document.getElementById("scope").value = "";
+        document.getElementById("budget").value = "";
+    }
+
+    // --- FUNCTION 2: Load Evidence Feed ---
+    function loadEvidence() {
+        const container = document.getElementById('evidence-feed');
+        container.innerHTML = "<p>Scanning Ledger for Evidence Blocks...</p>";
+
+        // 1. Get entire chain
+        const chain = GovChain.getChain();
+        
+        // 2. Filter for EVIDENCE_UPLOAD blocks
+        const evidenceBlocks = chain.filter(block => block.type === 'EVIDENCE_UPLOAD');
+
+        if(evidenceBlocks.length === 0) {
+            container.innerHTML = "<p>No evidence uploaded to the blockchain yet.</p>";
+            return;
+        }
+
+        let html = "";
+        // 3. Loop and Display
+        // We reverse the array to show the newest photos first
+        evidenceBlocks.reverse().forEach(block => {
+            const data = block.data.body; // Accessing the 'POST' body structure
+            
+            html += `
+                <div class="evidence-card">
+                    <img src="${data.evidenceData}" class="evidence-img" alt="Site Evidence">
+                    <div>
+                        <h4 style="margin:0 0 5px 0; color:#1e3a8a;">${data.projectId}</h4>
+                        <p style="margin:0; font-weight:bold; color:#334155;">${data.description}</p>
+                        <p style="margin:5px 0; font-size:0.8rem; color:#64748b;">
+                            Contractor ID: ${data.contractorId} <br>
+                            Block Index: #${block.index} | Time: ${new Date(block.timestamp).toLocaleTimeString()}
+                        </p>
+                        <div style="font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.75rem; color:#475569; word-break:break-all;">
+                            Hash: ${block.hash}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
     }
 </script>
 

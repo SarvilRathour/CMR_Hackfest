@@ -3,200 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Portal | Gov-Tenders</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    <title>Contractor Portal | GovChain</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="blockchain_engine.js"></script> <style>
+        body { font-family: 'Inter', system-ui; background: #f8fafc; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         
-        .accordion-wrapper {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.3s ease-out;
-        }
-        .accordion-wrapper.active { grid-template-rows: 1fr; }
-        .accordion-content { overflow: hidden; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
+        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        
+        /* Upload Box Styling */
+        .upload-box { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; border-radius: 8px; background: #f1f5f9; cursor: pointer; }
+        .upload-box:hover { border-color: #2563eb; background: #e0f2fe; }
+        
+        button { background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px;}
+        button:hover { background: #1d4ed8; }
 
-        .input-standard {
-            @apply w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all outline-none text-slate-800 text-sm text-center;
-        }
-
-        .btn-indigo {
-            @apply w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold transition-all active:scale-[0.98] text-sm flex items-center justify-center gap-2;
-        }
-
-        .status-pill {
-            @apply px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border;
-        }
-
-        .hidden-state { display: none !important; }
+        .status-msg { margin-top: 15px; padding: 10px; border-radius: 6px; display: none; word-break: break-all; font-family: monospace; font-size: 0.85rem;}
+        .success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .preview-img { max-width: 100%; margin-top: 10px; border-radius: 6px; display: none; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
-<div id="loginSection" class="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
-    <div class="w-full max-w-md text-center">
-        <div class="flex flex-col items-center gap-3 mb-8">
-            <div class="bg-indigo-600 p-3 rounded-xl shadow-lg shadow-indigo-100">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-            </div>
-            <span class="text-2xl font-black text-slate-900 tracking-tight">Gov-Tenders</span>
-        </div>
 
-        <div class="bg-white px-8 py-10 border border-slate-100 rounded-3xl shadow-xl shadow-slate-200/50">
-            <h1 id="authTitle" class="text-2xl font-bold text-slate-900">Contractor Login</h1>
-            <p id="authSub" class="text-slate-500 text-sm mt-2 mb-10">Access your project workspace</p>
-
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</label>
-                    <input type="text" id="authUser" class="input-standard" placeholder="Enter ID">
-                </div>
-                
-                <div class="space-y-2">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Security Password</label>
-                    <input type="password" id="authPass" class="input-standard" placeholder="••••••••">
-                </div>
-                
-                <p id="authError" class="text-rose-500 text-xs font-semibold h-4"></p>
-
-                <button onclick="handleAuth()" id="authBtn" class="btn-indigo mt-4">
-                    Sign In
-                </button>
-                
-                <div class="pt-8 mt-4 border-t border-slate-50">
-                    <p class="text-sm text-slate-500">
-                        <span id="modeText">New vendor?</span> 
-                        <button onclick="toggleAuthMode()" id="toggleBtn" class="text-indigo-600 font-bold hover:underline ml-1">Create Account</button>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <p class="mt-8 text-slate-400 text-[10px] font-medium tracking-widest uppercase">Secure 256-bit Encrypted Portal</p>
+<div class="container">
+    <h2>👷 Contractor Evidence Upload</h2>
+    
+    <div class="form-group">
+        <label>Select Project ID</label>
+        <select id="projectSelect">
+            <option value="NH-44">Highway Expansion (NH-44)</option>
+            <option value="Hospital-WingA">City Hospital Wing A</option>
+        </select>
     </div>
-</div>
 
-<div id="dashboardContent" class="hidden-state min-h-screen">
-    <nav class="bg-white border-b border-slate-100 px-6 py-4">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-900 text-lg tracking-tight">Gov-Tenders</span>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="text-right">
-                    <p id="displayUserName" class="text-sm font-bold text-slate-900">User</p>
-                    <p class="text-[10px] text-indigo-600 font-bold uppercase tracking-widest">Verified Vendor</p>
-                </div>
-                <button onclick="handleLogout()" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors uppercase">
-                    Logout
-                </button>
-            </div>
-        </div>
-    </nav>
+    <div class="form-group">
+        <label>Phase Update</label>
+        <input type="text" id="phaseNote" placeholder="e.g. Foundation Level Complete">
+    </div>
 
-    <main class="max-w-5xl mx-auto px-6 py-12 text-center sm:text-left">
-        <h2 class="text-3xl font-bold text-slate-900 mb-8">Ongoing Contracts</h2>
-        
-        <div class="bg-white border border-slate-100 rounded-3xl shadow-lg shadow-slate-100 p-8">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-8">
-                <div class="text-center sm:text-left">
-                    <span class="status-pill bg-emerald-50 text-emerald-600 border-emerald-100">Active Phase: 03</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-3">Smart City Grid Expansion</h3>
-                    <p class="text-xs text-slate-400 font-mono mt-1">#TMT-88210</p>
-                </div>
-                <button onclick="toggleAccordion('updateSection', 'updateIcon')" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-indigo-600 transition-colors">
-                    Add Progress Block
-                </button>
-            </div>
+    <div class="form-group">
+        <label>Site Photo Evidence</label>
+        <input type="file" id="sitePhoto" accept="image/*" onchange="previewFile()">
+        <img id="imgPreview" class="preview-img" alt="Preview">
+    </div>
 
-            <div class="w-full bg-slate-100 h-3 rounded-full mb-3">
-                <div class="bg-indigo-600 h-3 rounded-full" style="width: 45%"></div>
-            </div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">45% Completion Rate</p>
-
-            <div id="updateSection" class="accordion-wrapper mt-4">
-                <div class="accordion-content">
-                    <div class="pt-8 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" class="input-standard" placeholder="Block Name">
-                        <input type="date" class="input-standard">
-                        <textarea class="input-standard md:col-span-2" rows="3" placeholder="Work summary..."></textarea>
-                        <div class="md:col-span-2 flex justify-center">
-                            <button onclick="alert('Submitted')" class="btn-indigo max-w-xs">Upload Block</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <button onclick="submitToBlockchain()">🚀 Upload Evidence On-Chain</button>
+    
+    <div id="statusArea" class="status-msg success"></div>
 </div>
 
 <script>
-    // 1. IMMEDIATE SESSION CHECK (Prevents the "Flash" of the login page)
-    if (localStorage.getItem('activeSession')) {
-        window.location.href = "./contractor_dashboard.html";
+    let base64ImageString = "";
+
+    // 1. Convert Image to Base64 (Text)
+    function previewFile() {
+        const file = document.querySelector('input[type=file]').files[0];
+        const preview = document.getElementById('imgPreview');
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            // Show preview
+            preview.src = reader.result;
+            preview.style.display = 'block';
+            
+            // Store the Base64 string to send to blockchain
+            base64ImageString = reader.result; 
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     }
 
-    let isLoginMode = true;
+    // 2. Mock POST Method Logic
+    function submitToBlockchain() {
+        const projectId = document.getElementById('projectSelect').value;
+        const note = document.getElementById('phaseNote').value;
 
-    function toggleAuthMode() {
-        isLoginMode = !isLoginMode;
-        document.getElementById('authTitle').innerText = isLoginMode ? "Contractor Login" : "Register Vendor";
-        document.getElementById('authSub').innerText = isLoginMode ? "Access your project workspace" : "Enroll your company in the tender system";
-        document.getElementById('authBtn').innerText = isLoginMode ? "Sign In" : "Complete Registration";
-        document.getElementById('modeText').innerText = isLoginMode ? "New vendor?" : "Already enrolled?";
-        document.getElementById('toggleBtn').innerText = isLoginMode ? "Create Account" : "Return to Login";
-        document.getElementById('authError').innerText = "";
-    }
+        if(!note || !base64ImageString) {
+            alert("Please select a photo and add a note.");
+            return;
+        }
 
-    function handleAuth() {
-        const user = document.getElementById('authUser').value.trim();
-        const pass = document.getElementById('authPass').value;
-        const error = document.getElementById('authError');
-        
-        if(!user || !pass) { error.innerText = "Please fill all fields"; return; }
-
-        let users = JSON.parse(localStorage.getItem('portal_users') || "[]");
-
-        if(isLoginMode) {
-            const found = users.find(u => u.username === user && u.password === pass);
-            if(found) { loginSuccess(user); } 
-            else { error.innerText = "Invalid credentials"; }
-        } else {
-            if(users.some(u => u.username === user)) { error.innerText = "Username already taken"; } 
-            else {
-                users.push({username: user, password: pass});
-                localStorage.setItem('portal_users', JSON.stringify(users));
-                loginSuccess(user);
+        // A. Prepare the Payload (Just like a POST body)
+        const payload = {
+            method: 'POST',
+            endpoint: '/api/v1/evidence/upload',
+            timestamp: new Date().toISOString(),
+            body: {
+                contractorId: "CNTR-8821", // Hardcoded for demo
+                projectId: projectId,
+                description: note,
+                evidenceData: base64ImageString // The actual image data
             }
-        }
-    }
+        };
 
-    function loginSuccess(username) {
-        localStorage.setItem('activeSession', username);
-        // REDIRECT added here as requested
-        window.location.href = "./contractor_dashboard.html";
-    }
+        // B. Send to Blockchain Engine
+        // We use "EVIDENCE_UPLOAD" as the block type
+        const newBlock = GovChain.addData('EVIDENCE_UPLOAD', payload);
 
-    function handleLogout() {
-        localStorage.removeItem('activeSession');
-        window.location.reload();
-    }
-
-    // Existing functionality for the internal dashboard (if still used)
-    window.onload = function() {
-        const session = localStorage.getItem('activeSession');
-        if(session) {
-            // This ensures the internal dashboard still works if the redirect fails 
-            // or if you decide to keep the content on one page later.
-            document.getElementById('displayUserName').innerText = session;
-            document.getElementById('loginSection').classList.add('hidden-state');
-            document.getElementById('dashboardContent').classList.remove('hidden-state');
-        }
-    }
-
-    function toggleAccordion(contentId, iconId) {
-        document.getElementById(contentId).classList.toggle('active');
+        // C. Show Success
+        const status = document.getElementById('statusArea');
+        status.style.display = 'block';
+        status.innerHTML = `
+            <strong>✅ Evidence Mined to Block #${newBlock.index}</strong><br>
+            <strong>Hash:</strong> ${newBlock.hash}<br>
+            <small>Image data permanently stored on ledger.</small>
+        `;
     }
 </script>
 
